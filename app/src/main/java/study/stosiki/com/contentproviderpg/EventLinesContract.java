@@ -62,18 +62,18 @@ public class EventLinesContract {
     public static final class EventLineListItem {
         /* content URI for the event_lines table */
         public static final Uri CONTENT_URI =
-                Uri.withAppendedPath(EventLinesContract.CONTENT_URI, DbSchema.TBL_EVENT_LINE);
+                Uri.withAppendedPath(EventLinesContract.CONTENT_URI, DbSchema.VIEW_LINE_LIST_ITEMS);
         /* directory MIME type */
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + MIME_SUBTYPE_EVENTLINE;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + MIME_SUBTYPE_EVENTLINE_LIST_ITEM;
         /* single item type */
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + MIME_SUBTYPE_EVENTLINE;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + MIME_SUBTYPE_EVENTLINE_LIST_ITEM;
         /* projection of all columns in the event_lines table */
         public static final String[] PROJECTION_ALL = {
                 DbSchema.COL_ID,
-                DbSchema.COL_LINE_TYPE,
-                DbSchema.COL_TITLE
+                DbSchema.COL_TITLE,
+                DbSchema.COL_EVENT_COUNT,
         };
     }
 }
