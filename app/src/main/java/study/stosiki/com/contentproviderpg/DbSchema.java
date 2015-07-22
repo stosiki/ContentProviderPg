@@ -26,12 +26,15 @@ public interface DbSchema {
     /* view event line list item */
     String COL_EVENT_COUNT = "event_count";
 
+    String DBC_PRAGMA_FK = "PRAGMA foreign keys = ON;";
+
     String DDL_CREATE_TBL_EVENTS =
             "CREATE TABLE " + TBL_EVENTS + " " +
             "(" + COL_ID + " INTEGER PRIMARY KEY " +
             COL_TIMESTAMP + " INTEGER NOT NULL " +
             COL_LINE_ID + " INTEGER NOT NULL " +
-            "FOREIGN KEY(" + COL_LINE_ID + ") REFERENCES " + TBL_EVENT_LINES + "(" + COL_ID + ")";
+            "FOREIGN KEY(" + COL_LINE_ID + ") REFERENCES " + TBL_EVENT_LINES + "(" + COL_ID + ")" +
+            " ON DELETE CASCADE";
 
     String DDL_CREATE_TBL_EVENT_LINES =
             "CREATE TABLE " + TBL_EVENT_LINES + " " +

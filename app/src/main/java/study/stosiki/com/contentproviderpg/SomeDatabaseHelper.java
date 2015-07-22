@@ -20,6 +20,7 @@ public class SomeDatabaseHelper extends SQLiteOpenHelper implements DbSchema {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(DbSchema.DBC_PRAGMA_FK);
         db.execSQL(DbSchema.DDL_CREATE_TBL_EVENT_LINES);
         db.execSQL(DbSchema.DDL_CREATE_TBL_EVENTS);
         db.execSQL(DbSchema.DDL_CREATE_VIEW_EVENT_LINE_LIST_ITEMS);
