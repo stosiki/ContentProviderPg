@@ -1,13 +1,21 @@
+/*
+ * Content Provider
+ * It intentionally doesn't support batch mode
+ *
+ */
 package study.stosiki.com.contentproviderpg;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import java.util.IllformedLocaleException;
+import java.sql.SQLException;
+
 
 public class SomeContentProvider extends ContentProvider {
     /* helper constants for use with URI matcher */
@@ -58,7 +66,7 @@ public class SomeContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unsupported URI " + uri.toString());
         }
 
-        if(delCount > 0 && !isInBatchMode()) {
+        if(delCount > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
@@ -86,11 +94,18 @@ public class SomeContentProvider extends ContentProvider {
     }
 
     @Override
+    /*
+     * @return null if insert is not successful
+     */
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         switch (URI_MATCHER.match(uri)) {
             case EVENT_ID:
-                long id = database.
+                long id = database.insert(DbSchema.TBL_EVENTS, null, values);
+                return getUriForId(uri, id);
+            case EVENT_LINE_ID:
+                long lineId = database.insert(DbSchema.TBL_EVENT_LINES, null, values);
+                return getUriForId(uri, lineId);
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri.toString());
         }
@@ -99,8 +114,27 @@ public class SomeContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        // TODO: Implement this to handle query requests from clients.
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
+        switch (URI_MATCHER.match(uri)) {
+            case EVENT_DIR:
+                queryBuilder.setTables(DbSchema.TBL_EVENTS);
+                break;
+            case EVENT_LINE_DIR:
+                queryBuilder.setTables(DbSchema.TBL_EVENT_LINES);
+                break;
+            case EVENT_LINE_LIST_DIR:
+                queryBuilder.setTables(DbSchema.VIEW_LINE_LIST_ITEMS);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported URI " + uri.toString());
+        }
+
+        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs,
+                null, null, sortOrder);
+
+        return cursor;
     }
 
     @Override
@@ -110,7 +144,12 @@ public class SomeContentProvider extends ContentProvider {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private boolean isInBatchMode() {
-        return batchMode.get() != null && batchMode.get();
+    private Uri getUriForId(Uri uri, long id) {
+        if (id > 0) {
+            Uri itemUri = ContentUris.withAppendedId(uri, id);
+            getContext().getContentResolver().notifyChange(itemUri, null);
+            return itemUri;
+        }
+        return null;
     }
 }

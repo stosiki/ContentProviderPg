@@ -19,9 +19,9 @@
 
         <provider
             android:name=".SomeContentProvider"
-            android:authorities="some_good_content_here"
+            android:authorities="com.stosiki.eventlines"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </provider>
     </application>
 
