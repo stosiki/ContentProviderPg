@@ -20,10 +20,27 @@ public class SomeDatabaseHelper extends SQLiteOpenHelper implements DbSchema {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DbSchema.DBC_PRAGMA_FK);
+//        db.execSQL(DbSchema.DBC_PRAGMA_FK);
         db.execSQL(DbSchema.DDL_CREATE_TBL_EVENT_LINES);
         db.execSQL(DbSchema.DDL_CREATE_TBL_EVENTS);
         db.execSQL(DbSchema.DDL_CREATE_VIEW_EVENT_LINE_LIST_ITEMS);
+        fakeData(db);
+    }
+
+    private void fakeData(SQLiteDatabase db) {
+        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
+               "VALUES(1, 1, \"Smiles\");");
+        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
+               "VALUES(2, 1, \"Nice Girls\");");
+        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
+               "VALUES(3, 1, \"Single-speeds\");");
+        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
+               "VALUES(4, 1, \"Cups of tea\");");
+        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
+               "VALUES(5, 1, \"White cars\");");
+        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
+               "VALUES(6, 1, \"New Kid\");");
+
     }
 
     @Override

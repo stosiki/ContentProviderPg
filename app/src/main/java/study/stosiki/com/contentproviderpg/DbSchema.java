@@ -30,17 +30,17 @@ public interface DbSchema {
 
     String DDL_CREATE_TBL_EVENTS =
             "CREATE TABLE " + TBL_EVENTS + " " +
-            "(" + COL_ID + " INTEGER PRIMARY KEY " +
-            COL_TIMESTAMP + " INTEGER NOT NULL " +
-            COL_LINE_ID + " INTEGER NOT NULL " +
+            "(" + COL_ID + " INTEGER PRIMARY KEY, " +
+            COL_TIMESTAMP + " INTEGER NOT NULL, " +
+            COL_LINE_ID + " INTEGER NOT NULL, " +
             "FOREIGN KEY(" + COL_LINE_ID + ") REFERENCES " + TBL_EVENT_LINES + "(" + COL_ID + ")" +
-            " ON DELETE CASCADE";
+            " ON DELETE CASCADE);";
 
     String DDL_CREATE_TBL_EVENT_LINES =
             "CREATE TABLE " + TBL_EVENT_LINES + " " +
-            "(" + COL_ID + " INTEGER PRIMARY KEY " +
-            COL_LINE_TYPE + " INTEGER NOT NULL " +
-            COL_TITLE + " TEXT NOT NULL";
+            "(" + COL_ID + " INTEGER PRIMARY KEY, " +
+            COL_LINE_TYPE + " INTEGER NOT NULL, " +
+            COL_TITLE + " TEXT NOT NULL);";
 
     String DDL_CREATE_VIEW_EVENT_LINE_LIST_ITEMS =
             //create view event_line_list_items as select event_lines._id, event_lines.line_title,
@@ -50,7 +50,8 @@ public interface DbSchema {
             ", " + TBL_EVENT_LINES + "." + COL_TITLE + ", COUNT(" + TBL_EVENTS + "." + COL_LINE_ID +
             ") AS " + COL_EVENT_COUNT + " FROM " + TBL_EVENT_LINES + " LEFT OUTER JOIN " +
             TBL_EVENTS + " ON " + TBL_EVENT_LINES + "." + COL_ID + "=" +
-            TBL_EVENTS + "." + COL_LINE_ID + " GROUP BY " + TBL_EVENT_LINES + "." + COL_LINE_ID;
+            TBL_EVENTS + "." + COL_LINE_ID + " GROUP BY " + TBL_EVENT_LINES + "." + COL_ID +
+            ";";
 
     String DDL_DROP_TBL_EVENTS =
             "DROP TABLE IF EXISTS " + TBL_EVENTS;
