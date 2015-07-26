@@ -47,7 +47,8 @@ public interface DbSchema {
             //count(events.line_id) as event_count from event_lines
             //left outer join events on event_lines._id=events.line_id group by event_lines._id;
             "CREATE VIEW " + VIEW_LINE_LIST_ITEMS + " AS SELECT " + TBL_EVENT_LINES + "." + COL_ID +
-            ", " + TBL_EVENT_LINES + "." + COL_TITLE + ", COUNT(" + TBL_EVENTS + "." + COL_LINE_ID +
+            ", " + TBL_EVENT_LINES + "." + COL_TITLE + ", " + TBL_EVENT_LINES + "." + COL_LINE_TYPE +
+            ", COUNT(" + TBL_EVENTS + "." + COL_LINE_ID +
             ") AS " + COL_EVENT_COUNT + " FROM " + TBL_EVENT_LINES + " LEFT OUTER JOIN " +
             TBL_EVENTS + " ON " + TBL_EVENT_LINES + "." + COL_ID + "=" +
             TBL_EVENTS + "." + COL_LINE_ID + " GROUP BY " + TBL_EVENT_LINES + "." + COL_ID +

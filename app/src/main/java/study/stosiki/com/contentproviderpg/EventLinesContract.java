@@ -14,10 +14,9 @@ public class EventLinesContract {
     /* content URI for the top-level eventlines authority */
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    private static final String MIME_SUBTYPE_EVENT = "/vnd.com.stosiki.event";
-    private static final String MIME_SUBTYPE_EVENTLINE = "/vnd.com.stosiki.eventline";
-    private static final String MIME_SUBTYPE_EVENTLINE_LIST_ITEM =
-            "/vnd.com.stosiki.eventline_list_item";
+    private static final String MIME_SUBTYPE_EVENT = "/event";
+    private static final String MIME_SUBTYPE_EVENTLINE = "/eventline";
+    private static final String MIME_SUBTYPE_EVENTLINE_LIST_ITEM = "/eventline_list_item";
 
     /* selection clause for ID based queries */
     public static final String SELECTION_ID_BASED = BaseColumns._ID + " = ? ";

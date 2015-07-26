@@ -1,5 +1,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,10 +10,54 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
     >
-
-    <TextView
+    <ListView
+        android:id="@android:id/list"
+        android:divider="@color/white_paper"
+        android:dividerHeight="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <LinearLayout
+        android:id="@+id/undo_bar"
+        android:orientation="horizontal"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="20dp"
+        android:alpha="100"
+        android:background="#808080"
+        android:dividerPadding="12dp"
+        android:padding="4dp"
+        >
+        <TextView
+            android:id="@+id/undo_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Deleted"
+            android:textColor="#ffffff"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+        <Button
+            android:id="@+id/undo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Undo"
+            android:layout_marginLeft="30dp"
+            android:onClick="onUndoClick"
+            android:background="#808080"
+            android:drawableLeft="@drawable/ic_undo_black_24dp"
+            android:textColor="#fff"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_event_line_widget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add_circle_black_24dp"
+        app:elevation="4dp"
+        app:borderWidth="0dp"
+        android:layout_gravity="bottom|center_horizontal"
         />
 </FrameLayout>

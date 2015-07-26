@@ -13,11 +13,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 import java.sql.SQLException;
 
 
 public class SomeContentProvider extends ContentProvider {
+    private static final String TAG = SomeContentProvider.class.getSimpleName();
+
     /* helper constants for use with URI matcher */
     private static final int EVENT_DIR = 1;
     private static final int EVENT_ID = 2;
@@ -27,13 +30,14 @@ public class SomeContentProvider extends ContentProvider {
     private static final int EVENT_LINE_LIST_ID = 6;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+
     static {
         URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "events", EVENT_DIR);
         URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "events/#", EVENT_ID);
         URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_lines", EVENT_LINE_DIR);
         URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_lines/#", EVENT_LINE_ID);
-        URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_list_items", EVENT_LINE_LIST_DIR);
-        URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_list_items/#", EVENT_LINE_LIST_ID);
+        URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_line_list_items", EVENT_LINE_LIST_DIR);
+        URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_line_list_items/#", EVENT_LINE_LIST_ID);
     }
 
     private final ThreadLocal<Boolean> batchMode = new ThreadLocal<>();
@@ -67,7 +71,9 @@ public class SomeContentProvider extends ContentProvider {
         }
 
         if(delCount > 0) {
+            Log.d(TAG, "Number of lines deleted=" + delCount + ", about to notify the resolver");
             getContext().getContentResolver().notifyChange(uri, null);
+            MainActivity.eventBus.post(new Integer(2));
         }
 
         return delCount;
@@ -100,10 +106,12 @@ public class SomeContentProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         switch (URI_MATCHER.match(uri)) {
-            case EVENT_ID:
+            case EVENT_DIR:
                 long id = database.insert(DbSchema.TBL_EVENTS, null, values);
+                MainActivity.eventBus.post(new Integer(1));
+                Log.d(TAG, "message posted");
                 return getUriForId(uri, id);
-            case EVENT_LINE_ID:
+            case EVENT_LINE_DIR:
                 long lineId = database.insert(DbSchema.TBL_EVENT_LINES, null, values);
                 return getUriForId(uri, lineId);
             default:
