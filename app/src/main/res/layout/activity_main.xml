@@ -1,4 +1,4 @@
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -20,16 +20,17 @@
     <LinearLayout
         android:id="@+id/undo_bar"
         android:orientation="horizontal"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_margin="20dp"
         android:alpha="100"
-        android:background="#808080"
+
         android:dividerPadding="12dp"
         android:padding="4dp"
-        >
+        android:gravity="center|bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
         <TextView
             android:id="@+id/undo_message"
             android:layout_width="wrap_content"
@@ -58,6 +59,15 @@
         android:src="@drawable/ic_add_circle_black_24dp"
         app:elevation="4dp"
         app:borderWidth="0dp"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginRight="16dp"
+        android:layout_gravity="bottom|right"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
+    <View
+        android:id="@+id/dummy_removed_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/deleted_red"
+        android:visibility="invisible"
         />
-</FrameLayout>
+</RelativeLayout>

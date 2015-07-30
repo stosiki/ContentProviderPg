@@ -55,6 +55,12 @@ public class DbAsyncOpsService extends IntentService {
     }
 
     private void onActionCreateEventLine(Intent intent) {
+        int lineType = intent.getIntExtra(DbSchema.COL_LINE_TYPE, -1);
+        String lineTitle = intent.getStringExtra(DbSchema.COL_TITLE);
+        ContentValues values = new ContentValues();
+        values.put(DbSchema.COL_LINE_TYPE, lineType);
+        values.put(DbSchema.COL_TITLE, lineTitle);
+        getContentResolver().insert(EventLinesContract.EventLines.CONTENT_URI, values);
     }
 
     private void onActionDeleteEventLine(Intent intent) {

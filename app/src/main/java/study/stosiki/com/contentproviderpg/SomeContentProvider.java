@@ -52,6 +52,26 @@ public class SomeContentProvider extends ContentProvider {
     }
 
     @Override
+    public String getType(Uri uri) {
+        switch (URI_MATCHER.match(uri)) {
+            case EVENT_DIR:
+                return EventLinesContract.Events.CONTENT_TYPE;
+            case EVENT_ID:
+                return EventLinesContract.Events.CONTENT_ITEM_TYPE;
+            case EVENT_LINE_DIR:
+                return EventLinesContract.EventLines.CONTENT_TYPE;
+            case EVENT_LINE_ID:
+                return EventLinesContract.EventLines.CONTENT_ITEM_TYPE;
+            case EVENT_LINE_LIST_DIR:
+                return EventLinesContract.EventLineListItem.CONTENT_TYPE;
+            case EVENT_LINE_LIST_ID:
+                return EventLinesContract.EventLineListItem.CONTENT_ITEM_TYPE;
+            default:
+                throw new IllegalArgumentException("Unsupported URI " + uri.toString());
+        }
+    }
+
+    @Override
     /*
      * we can only delete event lines. Belonging events are deleted by the
      * db engine on cascade
@@ -74,29 +94,11 @@ public class SomeContentProvider extends ContentProvider {
             Log.d(TAG, "Number of lines deleted=" + delCount + ", about to notify the resolver");
             getContext().getContentResolver().notifyChange(uri, null);
             MainActivity.eventBus.post(new Integer(2));
+        } else {
+            Log.e(TAG, "Delete failed");
         }
 
         return delCount;
-    }
-
-    @Override
-    public String getType(Uri uri) {
-        switch (URI_MATCHER.match(uri)) {
-            case EVENT_DIR:
-                return EventLinesContract.Events.CONTENT_TYPE;
-            case EVENT_ID:
-                return EventLinesContract.Events.CONTENT_ITEM_TYPE;
-            case EVENT_LINE_DIR:
-                return EventLinesContract.EventLines.CONTENT_TYPE;
-            case EVENT_LINE_ID:
-                return EventLinesContract.EventLines.CONTENT_ITEM_TYPE;
-            case EVENT_LINE_LIST_DIR:
-                return EventLinesContract.EventLineListItem.CONTENT_TYPE;
-            case EVENT_LINE_LIST_ID:
-                return EventLinesContract.EventLineListItem.CONTENT_ITEM_TYPE;
-            default:
-                throw new IllegalArgumentException("Unsupported URI " + uri.toString());
-        }
     }
 
     @Override
@@ -113,6 +115,7 @@ public class SomeContentProvider extends ContentProvider {
                 return getUriForId(uri, id);
             case EVENT_LINE_DIR:
                 long lineId = database.insert(DbSchema.TBL_EVENT_LINES, null, values);
+                MainActivity.eventBus.post(new Integer(3));
                 return getUriForId(uri, lineId);
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri.toString());

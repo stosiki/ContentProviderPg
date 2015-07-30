@@ -65,13 +65,16 @@ public class CreateEventLineDialogFragment extends DialogFragment {
         ArrayAdapter<String> eventTypesAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_single_choice, eventLineTypes);
         eventLineTypeSelector = (ListView)view.findViewById(R.id.event_line_type_selector);
+        eventLineTypeSelector.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         eventLineTypeSelector.setAdapter(eventTypesAdapter);
+        /*
         eventLineTypeSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 eventLineTypeSelector.setSelection(position);
             }
         });
+        */
 
         eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);
     }

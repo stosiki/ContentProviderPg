@@ -23,6 +23,11 @@
             android:enabled="true"
             android:exported="false" >
         </provider>
+
+        <service
+            android:name=".DbAsyncOpsService"
+            android:exported="false"
+            />
     </application>
 
 </manifest>
