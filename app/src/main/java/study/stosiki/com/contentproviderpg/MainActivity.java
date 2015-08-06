@@ -3,7 +3,6 @@ package study.stosiki.com.contentproviderpg;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.TimeInterpolator;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
@@ -11,6 +10,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -26,8 +26,10 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int EVENT_LINES_LOADER_ID = 1;
 
-    private static final long LIST_ITEM_COLLAPSE_ANIM_DURATION = 1000;
+    private static final long LIST_ITEM_COLLAPSE_ANIM_DURATION = 500;
     private static final long UNDO_BAR_HIDE_ANIM_DURATION = 1000;
 
     public static MainThreadBus eventBus = new MainThreadBus();
@@ -52,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements
     private View undoContainer;
     private FloatingActionButton addEventLineControl;
 
+    private ObjectAnimator hideUndoAnimator;
+    private Animation listItemCollapseAnimation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +66,10 @@ public class MainActivity extends AppCompatActivity implements
                 this,
                 R.layout.event_line_list_item,
                 null,
-                new String[]{DbSchema.COL_TITLE, DbSchema.COL_EVENT_COUNT},
-                new int[]{R.id.line_title, R.id.line_event_count},
+                new String[]{DbSchema.COL_ID, DbSchema.COL_TITLE, DbSchema.COL_EVENT_COUNT,
+                        DbSchema.COL_LINE_TYPE},
+                new int[]{R.id._id, R.id.line_title, R.id.line_event_count,
+                        R.id.line_type},
                 0
         ) {
             @Override
@@ -70,6 +77,39 @@ public class MainActivity extends AppCompatActivity implements
                 super.onContentChanged();
                 Log.d(TAG, "SimpleCursorAdapter::onContentChanged() called");
             }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+/*
+                if(convertView != null) {
+                    ((TextView)convertView.findViewById(R.id.line_title)).setText()
+                }
+                return  null;
+*/
+
+                View v = super.getView(position, convertView, parent);
+                int lineType = Integer.parseInt(
+                        (String) ((TextView) v.findViewById(R.id.line_type)).getText()
+                );
+                int bgColor;
+                switch(lineType) {
+                    case 0:
+                        bgColor = Color.CYAN;
+                        break;
+                    case 1:
+                        bgColor = Color.YELLOW;
+                        break;
+                    case 2:
+                        bgColor = 0x23eeff;
+                        break;
+                    default:
+                        bgColor = Color.BLACK;
+                }
+                v.setBackgroundColor(bgColor);
+
+                return v;
+            }
+
         };
 
         undoContainer = (View)findViewById(R.id.undo_bar);
@@ -93,7 +133,19 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedItemIndex = position;
-                addEventToLine(position);
+                int eventLineType = Integer.parseInt(
+                        (String) ((TextView) view.findViewById(R.id.line_type)).getText());
+                switch(eventLineType) {
+                    case 0:
+                        addEventToLine(position);
+                        break;
+                    case 1: // Numeric
+                        // raise number input dialog, event added from the callback
+                        break;
+                    case 2: // Comment
+                        // raise string input dialog
+                        break;
+                }
             }
         });
 
@@ -163,12 +215,6 @@ public class MainActivity extends AppCompatActivity implements
         Animation.AnimationListener collapseAnimationListener = new Animation.AnimationListener() {
             @Override
             public void onAnimationEnd(Animation arg0) {
-/*
-                listView.remove(selectedItemIndex);
-                ViewHolder vh = (ViewHolder)v.getTag();
-                vh.needInflate = true;
-                mMyAnimListAdapter.notifyDataSetChanged();
-*/
                 showUndo();
             }
             @Override public void onAnimationRepeat(Animation animation) {}
@@ -177,33 +223,13 @@ public class MainActivity extends AppCompatActivity implements
         collapse(selectedItemView, collapseAnimationListener);
     }
 
-    // https://github.com/paraches/ListViewCellDeleteAnimation/blob/master/src/com/example/myanimtest/MainActivity.java
     private void collapse(final View v, Animation.AnimationListener al) {
-        final int initialHeight = v.getMeasuredHeight();
-
-        Animation anim = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if (interpolatedTime == 1) {
-                    v.setVisibility(View.GONE);
-                }
-                else {
-                    v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
-                    v.requestLayout();
-                }
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
+        listItemCollapseAnimation = new ListItemCollapseAnimation(v, listView);
         if (al!=null) {
-            anim.setAnimationListener(al);
+            listItemCollapseAnimation.setAnimationListener(al);
         }
-        anim.setDuration(LIST_ITEM_COLLAPSE_ANIM_DURATION);
-        v.startAnimation(anim);
+        listItemCollapseAnimation.setDuration(LIST_ITEM_COLLAPSE_ANIM_DURATION);
+        v.startAnimation(listItemCollapseAnimation);
     }
 
 
@@ -213,21 +239,37 @@ public class MainActivity extends AppCompatActivity implements
 
         final int viewY = findCoords(R.id.undo_bar)[1];
 
-        ObjectAnimator hideUndoAnimator = ObjectAnimator.ofFloat(
+        hideUndoAnimator = ObjectAnimator.ofFloat(
                 undoContainer, View.Y, viewY, viewY + undoContainer.getHeight());
         hideUndoAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationCancel(Animator animation) {
+                restoreUndoContainerState();
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
-                // restore visibility and position of the undo bar
-                undoContainer.setVisibility(View.INVISIBLE);
-                undoContainer.setY(viewY);
-                // make sure undo bar is no longer visible
-                // and remove the event line
+                restoreUndoContainerState();
                 deleteEventLine(selectedItemIndex);
+            }
+
+            private void restoreUndoContainerState() {
+                undoContainer.setY(viewY);
+                undoContainer.setVisibility(View.INVISIBLE);
             }
         });
         hideUndoAnimator.setStartDelay(2000);
         hideUndoAnimator.start();
+
+    }
+
+    public void onUndoClick(View controlView) {
+        // stop undo animation - do it first, because it is undo animation listener
+        // that ultimately affects the data structure
+        hideUndoAnimator.end();
+
+        // stop collapse animation
+        listItemCollapseAnimation.cancel();
     }
 
     private int[] findCoords(int viewId) {
@@ -243,8 +285,10 @@ public class MainActivity extends AppCompatActivity implements
     private void deleteEventLine(int position) {
         Intent intent = new Intent(MainActivity.this, DbAsyncOpsService.class);
         long lineId = cursorAdapter.getItemId(position);
+        Log.d(TAG, "Event line title to be deleted: " + lineId);
         intent.setAction(DbAsyncOpsService.ACTION_DELETE_EVENT_LINE);
         intent.putExtra(BaseColumns._ID, lineId);
+        suspendInput();
         MainActivity.this.startService(intent);
     }
 
@@ -256,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements
         intent.setAction(DbAsyncOpsService.ACTION_CREATE_EVENT);
         long lineId = cursorAdapter.getItemId(position);
         intent.putExtra(DbSchema.COL_LINE_ID, lineId);
+        suspendInput();
         startService(intent);
     }
 
@@ -268,12 +313,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -286,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements
     public Loader onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
                 this,
-//                EventLinesContract.EventLines.CONTENT_URI,
                 EventLinesContract.EventLineListItem.CONTENT_URI,
                 EventLinesContract.EventLineListItem.PROJECTION_ALL,
                 null,
@@ -299,8 +338,9 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch(loader.getId()) {
             case EVENT_LINES_LOADER_ID:
-                Log.d(TAG, "Swapping the cursor");
                 cursorAdapter.swapCursor(cursor);
+                cursorAdapter.notifyDataSetChanged();
+                cursorAdapter.notifyDataSetInvalidated();
                 break;
             default:
                 Log.e(TAG, "Unknown adapter id");
@@ -309,6 +349,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(Loader loader) {
+        Log.d(TAG, "Loader reset");
         switch(loader.getId()) {
             case EVENT_LINES_LOADER_ID:
                 cursorAdapter.swapCursor(null);
@@ -320,17 +361,24 @@ public class MainActivity extends AppCompatActivity implements
 
     @Subscribe
     public void getMessage(String msg) {
-
     }
 
     @Subscribe
     public void getMessage(Integer msgCode) {
-        Log.d(TAG, "Got a message with msgCode=" + msgCode + ", restarting the loader");
-        if(msgCode.intValue() == 3) {
-            getLoaderManager().restartLoader(EVENT_LINES_LOADER_ID, null, this);
-        }
-        cursorAdapter.notifyDataSetChanged();
+        Log.d(TAG, "Got a message with msgCode=" + msgCode);
+        getLoaderManager().restartLoader(EVENT_LINES_LOADER_ID, null, this);
+        Log.d(TAG, "Loader restarted");
+        resumeInput();
+    }
+
+    private void resumeInput() {
+        listView.setEnabled(true);
         addEventLineControl.setEnabled(true);
+    }
+
+    private void suspendInput() {
+        listView.setEnabled(false);
+        addEventLineControl.setEnabled(false);
     }
 
     public void onDialogPositiveClick(DialogFragment dialog) {
@@ -341,10 +389,10 @@ public class MainActivity extends AppCompatActivity implements
         String lineTitle = ((CreateEventLineDialogFragment)dialog).getTitle();
         intent.putExtra(DbSchema.COL_LINE_TYPE, lineType);
         intent.putExtra(DbSchema.COL_TITLE, lineTitle);
+        suspendInput();
         startService(intent);
     }
 
     public void onDialogNegativeClick(DialogFragment dialog) {
-
     }
 }

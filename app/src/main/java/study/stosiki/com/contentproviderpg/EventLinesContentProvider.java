@@ -15,11 +15,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
-import java.sql.SQLException;
 
-
-public class SomeContentProvider extends ContentProvider {
-    private static final String TAG = SomeContentProvider.class.getSimpleName();
+public class EventLinesContentProvider extends ContentProvider {
+    private static final String TAG = EventLinesContentProvider.class.getSimpleName();
 
     /* helper constants for use with URI matcher */
     private static final int EVENT_DIR = 1;
@@ -42,12 +40,12 @@ public class SomeContentProvider extends ContentProvider {
 
     private final ThreadLocal<Boolean> batchMode = new ThreadLocal<>();
 
-    private SomeDatabaseHelper dbHelper;
+    private EventLinesDatabaseHelper dbHelper;
 
 
     @Override
     public boolean onCreate() {
-        dbHelper = new SomeDatabaseHelper(getContext());
+        dbHelper = new EventLinesDatabaseHelper(getContext());
         return true;
     }
 

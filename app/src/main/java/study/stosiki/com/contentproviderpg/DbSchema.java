@@ -30,7 +30,7 @@ public interface DbSchema {
 
     String DDL_CREATE_TBL_EVENTS =
             "CREATE TABLE " + TBL_EVENTS + " " +
-            "(" + COL_ID + " INTEGER PRIMARY KEY, " +
+            "(" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_TIMESTAMP + " INTEGER NOT NULL, " +
             COL_LINE_ID + " INTEGER NOT NULL, " +
             "FOREIGN KEY(" + COL_LINE_ID + ") REFERENCES " + TBL_EVENT_LINES + "(" + COL_ID + ")" +
@@ -38,7 +38,7 @@ public interface DbSchema {
 
     String DDL_CREATE_TBL_EVENT_LINES =
             "CREATE TABLE " + TBL_EVENT_LINES + " " +
-            "(" + COL_ID + " INTEGER PRIMARY KEY, " +
+            "(" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_LINE_TYPE + " INTEGER NOT NULL, " +
             COL_TITLE + " TEXT NOT NULL);";
 

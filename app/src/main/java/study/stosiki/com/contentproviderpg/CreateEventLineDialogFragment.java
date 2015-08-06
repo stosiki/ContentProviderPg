@@ -17,6 +17,8 @@ import android.widget.ListView;
  * Created by mike on 7/26/2015.
  */
 public class CreateEventLineDialogFragment extends DialogFragment {
+    private static final int DEFAULT_TYPE_POSITION = 0;
+
     public interface CreateEventLineDialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
         public void onDialogNegativeClick(DialogFragment dialog);
@@ -63,24 +65,41 @@ public class CreateEventLineDialogFragment extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
         String[] eventLineTypes = new String[]{"Basic", "Number", "Comment"};
         ArrayAdapter<String> eventTypesAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_single_choice, eventLineTypes);
+                R.layout.line_type_selector_item, eventLineTypes);
         eventLineTypeSelector = (ListView)view.findViewById(R.id.event_line_type_selector);
         eventLineTypeSelector.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        eventLineTypeSelector.getSelectedView();
+//        eventLineTypeSelector.setSelection(DEFAULT_TYPE_POSITION);
+
         eventLineTypeSelector.setAdapter(eventTypesAdapter);
         /*
         eventLineTypeSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                eventLineTypeSelector.setSelection(position);
+                setSelectedItem(position);
             }
         });
         */
-
+        setSelectedItem(DEFAULT_TYPE_POSITION);
         eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);
     }
 
+    private void setSelectedItem(final int position) {
+        eventLineTypeSelector.setItemChecked(position, true);
+/*
+        eventLineTypeSelector.clearFocus();
+        eventLineTypeSelector.post(new Runnable() {
+            public void run() {
+                eventLineTypeSelector.setSelection(position);
+            }
+        });
+*/
+//        View v = (View)eventLineTypeSelector.se.getItemAtPosition(position);
+//        v.setSelected(true);
+    }
+
     public int getSelectedType() {
-        return eventLineTypeSelector.getSelectedItemPosition();
+        return eventLineTypeSelector.getCheckedItemPosition();
     }
 
     public String getTitle() {

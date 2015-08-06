@@ -5,4 +5,14 @@ package study.stosiki.com.contentproviderpg;
  */
 public class Comments {
     // http://www.grokkingandroid.com/android-tutorial-writing-your-own-content-provider/
+
+    // Adding of event lines is OK
+
+    // add line types
+    // override getView in list adapter to:
+    // - show different line types
+    // - show selected item
+
+
+    // add analysis, graphs, statistics,
 }

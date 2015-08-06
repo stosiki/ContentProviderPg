@@ -18,7 +18,7 @@
         </activity>
 
         <provider
-            android:name=".SomeContentProvider"
+            android:name=".EventLinesContentProvider"
             android:authorities="com.stosiki.eventlines"
             android:enabled="true"
             android:exported="false" >
