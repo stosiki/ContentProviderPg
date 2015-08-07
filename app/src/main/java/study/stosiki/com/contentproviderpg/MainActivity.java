@@ -168,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements
     private void showAddEventLineDialog() {
         CreateEventLineDialogFragment createEventLineDialog = new CreateEventLineDialogFragment();
         FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().add(createEventLineDialog, "createEventLine").commit();
         createEventLineDialog.show(fm, "createEventLine");
     }
 
