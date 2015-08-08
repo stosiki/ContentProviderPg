@@ -18,6 +18,7 @@ public interface DbSchema {
     /* table events */
     String COL_TIMESTAMP = "timestamp";
     String COL_LINE_ID = "line_id";
+    String COL_DATA = "data";
 
     /* table event lines */
     String COL_LINE_TYPE = "linetype";
@@ -32,6 +33,7 @@ public interface DbSchema {
             "CREATE TABLE " + TBL_EVENTS + " " +
             "(" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_TIMESTAMP + " INTEGER NOT NULL, " +
+            COL_DATA + " TEXT, " +
             COL_LINE_ID + " INTEGER NOT NULL, " +
             "FOREIGN KEY(" + COL_LINE_ID + ") REFERENCES " + TBL_EVENT_LINES + "(" + COL_ID + ")" +
             " ON DELETE CASCADE);";

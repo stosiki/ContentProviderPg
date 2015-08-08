@@ -8,15 +8,17 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
+
 
 /**
- * Created by mike on 7/26/2015.
+ * Created by User on 08/08/2015.
+ *
+ * Dialog to enter string property of an event
  */
-public class CreateEventLineDialogFragment extends DialogFragment {
+
+public class EventStringPropertyDialogFragment extends DialogFragment {
     private static final int DEFAULT_TYPE_POSITION = 0;
 
     public interface DialogListener {
@@ -27,10 +29,9 @@ public class CreateEventLineDialogFragment extends DialogFragment {
     private View view;
     private DialogListener listener;
 
-    private ListView eventLineTypeSelector;
-    private EditText eventLineTitleEntry;
+    private EditText dataEntry;
 
-    public CreateEventLineDialogFragment() {}
+    public EventStringPropertyDialogFragment() {}
 
     @Override
     public void onAttach(Activity activity) {
@@ -49,11 +50,11 @@ public class CreateEventLineDialogFragment extends DialogFragment {
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                listener.onDialogNegativeClick(CreateEventLineDialogFragment.this);
+                listener.onDialogNegativeClick(EventStringPropertyDialogFragment.this);
             }
         });
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        view = inflater.inflate(R.layout.create_event_line_dialog, null);
+        view = inflater.inflate(R.layout.string_property_dialog, null);
         dialogBuilder.setView(view);
 
         return dialogBuilder.create();
@@ -69,10 +70,10 @@ public class CreateEventLineDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     if(verifyInput()) {
-                        listener.onDialogPositiveClick(CreateEventLineDialogFragment.this);
+                        listener.onDialogPositiveClick(EventStringPropertyDialogFragment.this);
                         dialog.dismiss();
                     } else {
-                        eventLineTitleEntry.setHintTextColor(
+                        dataEntry.setHintTextColor(
                                 getResources().getColor(android.R.color.holo_blue_bright));
                     }
                 }
@@ -81,33 +82,16 @@ public class CreateEventLineDialogFragment extends DialogFragment {
     }
 
     private boolean verifyInput() {
-        return eventLineTitleEntry.getText().toString().isEmpty() == false;
+        return dataEntry.getText().toString().isEmpty() == false;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        String[] eventLineTypes = new String[]{"Basic", "Number", "Comment"};
-        ArrayAdapter<String> eventTypesAdapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.line_type_selector_item, eventLineTypes);
-        eventLineTypeSelector = (ListView)view.findViewById(R.id.event_line_type_selector);
-        eventLineTypeSelector.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        eventLineTypeSelector.getSelectedView();
-
-        eventLineTypeSelector.setAdapter(eventTypesAdapter);
-        setSelectedItem(DEFAULT_TYPE_POSITION);
-        eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);
+        dataEntry = (EditText)view.findViewById(R.id.event_string_entry);
     }
 
-    private void setSelectedItem(final int position) {
-        eventLineTypeSelector.setItemChecked(position, true);
-    }
-
-    public int getSelectedType() {
-        return eventLineTypeSelector.getCheckedItemPosition();
-    }
-
-    public String getTitle() {
-        return eventLineTitleEntry.getText().toString();
+    public String getData() {
+        return dataEntry.getText().toString();
     }
 }

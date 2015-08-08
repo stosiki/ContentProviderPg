@@ -35,6 +35,7 @@ public class EventLinesContract {
         public static final String[] PROJECTION_ALL = {
                 DbSchema.COL_ID,
                 DbSchema.COL_TIMESTAMP,
+                DbSchema.COL_DATA,
                 DbSchema.COL_LINE_ID
         };
     }

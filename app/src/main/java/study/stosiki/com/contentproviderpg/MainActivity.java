@@ -24,9 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -36,7 +34,10 @@ import com.squareup.otto.Subscribe;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        CreateEventLineDialogFragment.CreateEventLineDialogListener {
+        CreateEventLineDialogFragment.DialogListener,
+        EventNumericPropertyDialogFragment.DialogListener,
+        EventStringPropertyDialogFragment.DialogListener
+{
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -137,13 +138,15 @@ public class MainActivity extends AppCompatActivity implements
                         (String) ((TextView) view.findViewById(R.id.line_type)).getText());
                 switch(eventLineType) {
                     case 0:
-                        addEventToLine(position);
+                        addEventToLine(null);
                         break;
                     case 1: // Numeric
                         // raise number input dialog, event added from the callback
+                        showNumericPropertyDialog();
                         break;
                     case 2: // Comment
                         // raise string input dialog
+                        showStringPropertyDialog();
                         break;
                 }
             }
@@ -170,6 +173,21 @@ public class MainActivity extends AppCompatActivity implements
         FragmentManager fm = getFragmentManager();
         createEventLineDialog.show(fm, "createEventLine");
     }
+
+    private void showNumericPropertyDialog() {
+        EventNumericPropertyDialogFragment propertyDialog =
+                new EventNumericPropertyDialogFragment();
+        FragmentManager fm = getFragmentManager();
+        propertyDialog.show(fm, "numericPropertyDialog");
+    }
+
+    private void showStringPropertyDialog() {
+        EventStringPropertyDialogFragment propertyDialog =
+                new EventStringPropertyDialogFragment();
+        FragmentManager fm = getFragmentManager();
+        propertyDialog.show(fm, "stringPropertyDialog");
+    }
+
 
     private void showContextActionBar() {
         actionMode = startActionMode(new ActionMode.Callback() {
@@ -292,13 +310,20 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    private void addEventToLine(int position) {
-        cursorAdapter.getItem(position);
+    private void addEventToLine(Object data) {
+        cursorAdapter.getItem(selectedItemIndex);
         // if event is being added to a simple line, just do it, otherwise
         Intent intent = new Intent(MainActivity.this, DbAsyncOpsService.class);
         intent.setAction(DbAsyncOpsService.ACTION_CREATE_EVENT);
-        long lineId = cursorAdapter.getItemId(position);
+        long lineId = cursorAdapter.getItemId(selectedItemIndex);
         intent.putExtra(DbSchema.COL_LINE_ID, lineId);
+        if(data != null) {
+            if(data instanceof Integer) {
+                intent.putExtra(DbSchema.COL_DATA, ((Integer) data).intValue());
+            } else if(data instanceof String) {
+                intent.putExtra(DbSchema.COL_DATA, (String) data);
+            }
+        }
         suspendInput();
         startService(intent);
     }
@@ -381,15 +406,23 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void onDialogPositiveClick(DialogFragment dialog) {
-        // if event is being added to a simple line, just do it, otherwise
-        Intent intent = new Intent(MainActivity.this, DbAsyncOpsService.class);
-        intent.setAction(DbAsyncOpsService.ACTION_CREATE_EVENT_LINE);
-        int lineType = ((CreateEventLineDialogFragment)dialog).getSelectedType();
-        String lineTitle = ((CreateEventLineDialogFragment)dialog).getTitle();
-        intent.putExtra(DbSchema.COL_LINE_TYPE, lineType);
-        intent.putExtra(DbSchema.COL_TITLE, lineTitle);
-        suspendInput();
-        startService(intent);
+        if(dialog instanceof CreateEventLineDialogFragment) {
+            // if event is being added to a simple line, just do it, otherwise
+            Intent intent = new Intent(MainActivity.this, DbAsyncOpsService.class);
+            intent.setAction(DbAsyncOpsService.ACTION_CREATE_EVENT_LINE);
+            int lineType = ((CreateEventLineDialogFragment) dialog).getSelectedType();
+            String lineTitle = ((CreateEventLineDialogFragment) dialog).getTitle();
+            intent.putExtra(DbSchema.COL_LINE_TYPE, lineType);
+            intent.putExtra(DbSchema.COL_TITLE, lineTitle);
+            suspendInput();
+            startService(intent);
+        } else if(dialog instanceof EventNumericPropertyDialogFragment) {
+            int data = ((EventNumericPropertyDialogFragment) dialog).getData();
+            addEventToLine(data);
+        }  else if(dialog instanceof EventStringPropertyDialogFragment) {
+            String data = ((EventStringPropertyDialogFragment) dialog).getData();
+            addEventToLine(data);
+        }
     }
 
     public void onDialogNegativeClick(DialogFragment dialog) {
