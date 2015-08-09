@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private SimpleCursorAdapter cursorAdapter;
     private int selectedItemIndex;
+    private int selectedForRemovalItemIndex;
     private ActionMode actionMode;
     private ListView listView;
     private View undoContainer;
@@ -74,12 +75,6 @@ public class MainActivity extends AppCompatActivity implements
                 0
         ) {
             @Override
-            protected void onContentChanged() {
-                super.onContentChanged();
-                Log.d(TAG, "SimpleCursorAdapter::onContentChanged() called");
-            }
-
-            @Override
             public View getView(int position, View convertView, ViewGroup parent) {
 /*
                 if(convertView != null) {
@@ -92,25 +87,9 @@ public class MainActivity extends AppCompatActivity implements
                 int lineType = Integer.parseInt(
                         (String) ((TextView) v.findViewById(R.id.line_type)).getText()
                 );
-                int bgColor;
-                switch(lineType) {
-                    case 0:
-                        bgColor = Color.CYAN;
-                        break;
-                    case 1:
-                        bgColor = Color.YELLOW;
-                        break;
-                    case 2:
-                        bgColor = 0x23eeff;
-                        break;
-                    default:
-                        bgColor = Color.BLACK;
-                }
-                v.setBackgroundColor(bgColor);
 
                 return v;
             }
-
         };
 
         undoContainer = (View)findViewById(R.id.undo_bar);
@@ -124,7 +103,8 @@ public class MainActivity extends AppCompatActivity implements
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedItemIndex = position;
+                selectedForRemovalItemIndex = position;
+                changeListItemBgColor(position, R.color.line_to_delete_bg);
                 showContextActionBar();
                 return true;
             }
@@ -133,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(actionMode != null) {
+                    actionMode.finish();
+                }
                 selectedItemIndex = position;
                 int eventLineType = Integer.parseInt(
                         (String) ((TextView) view.findViewById(R.id.line_type)).getText());
@@ -163,6 +146,18 @@ public class MainActivity extends AppCompatActivity implements
         eventBus.register(this);
     }
 
+    private void changeListItemBgColor(int position, int highlightColor) {
+        int color;
+        for(int i=0; i<listView.getChildCount(); i++) {
+            if(i == position) {
+                color = highlightColor;
+            } else {
+                color = R.color.line_normal_bg;
+            }
+            listView.getChildAt(i).setBackgroundColor(getResources().getColor(color));
+        }
+    }
+
     private void addEventLine() {
         addEventLineControl.setEnabled(false);
         showAddEventLineDialog();
@@ -187,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements
         FragmentManager fm = getFragmentManager();
         propertyDialog.show(fm, "stringPropertyDialog");
     }
-
 
     private void showContextActionBar() {
         actionMode = startActionMode(new ActionMode.Callback() {
@@ -226,9 +220,8 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
     private void verticalCollapseSelectedListItem() {
-        final View selectedItemView = listView.getChildAt(selectedItemIndex);
+        final View selectedItemView = listView.getChildAt(selectedForRemovalItemIndex);
         Animation.AnimationListener collapseAnimationListener = new Animation.AnimationListener() {
             @Override
             public void onAnimationEnd(Animation arg0) {
@@ -249,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements
         v.startAnimation(listItemCollapseAnimation);
     }
 
-
     private void showUndo() {
         undoContainer.setVisibility(View.VISIBLE);
         undoContainer.requestLayout();
@@ -267,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onAnimationEnd(Animator animation) {
                 restoreUndoContainerState();
-                deleteEventLine(selectedItemIndex);
+                deleteEventLine(selectedForRemovalItemIndex);
             }
 
             private void restoreUndoContainerState() {
@@ -308,7 +300,6 @@ public class MainActivity extends AppCompatActivity implements
         suspendInput();
         MainActivity.this.startService(intent);
     }
-
 
     private void addEventToLine(Object data) {
         cursorAdapter.getItem(selectedItemIndex);

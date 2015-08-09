@@ -26,4 +26,14 @@ public class Comments {
     // eg number of cups coffee and blood pressure
     // think of things that are available on the phone already and might be used
     // as series to find correlations with
+
+    //v.getBackground().setColorFilter(Color.parseColor("#00ff00"), PorterDuff.Mode.DARKEN);
+    //
+    /*
+    However, some Views already have backgrounds. A Button, for example, already has a background:
+    the face of the button itself. This background is a StateListDrawable, which you can find in
+    android-2.1/data/res/drawable/btn_default.xml in your Android SDK installation. That, in turn,
+    refers to a bunch of nine-patch bitmap images, available in multiple densities. You would need
+    to clone and modify all of that to accomplish your green goals.
+     */
 }
