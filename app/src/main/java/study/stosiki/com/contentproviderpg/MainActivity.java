@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final long LIST_ITEM_COLLAPSE_ANIM_DURATION = 500;
     private static final long UNDO_BAR_HIDE_ANIM_DURATION = 1000;
+    public static final int LINE_TYPE_INTEGER = 1;
+    public static final int LINE_TYPE_STRING = 2;
 
     public static MainThreadBus eventBus = new MainThreadBus();
 
@@ -76,18 +78,8 @@ public class MainActivity extends AppCompatActivity implements
         ) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-/*
-                if(convertView != null) {
-                    ((TextView)convertView.findViewById(R.id.line_title)).setText()
-                }
-                return  null;
-*/
-
+                // TODO: ViewHolder etc.
                 View v = super.getView(position, convertView, parent);
-                int lineType = Integer.parseInt(
-                        (String) ((TextView) v.findViewById(R.id.line_type)).getText()
-                );
-
                 return v;
             }
         };
@@ -116,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements
                 if(actionMode != null) {
                     actionMode.finish();
                 }
+
+                resetListItemsBgColor();
+
                 selectedItemIndex = position;
                 int eventLineType = Integer.parseInt(
                         (String) ((TextView) view.findViewById(R.id.line_type)).getText());
@@ -152,9 +147,16 @@ public class MainActivity extends AppCompatActivity implements
             if(i == position) {
                 color = highlightColor;
             } else {
-                color = R.color.line_normal_bg;
+                color = R.color.event_line_item_bg;
             }
             listView.getChildAt(i).setBackgroundColor(getResources().getColor(color));
+        }
+    }
+
+    private void resetListItemsBgColor() {
+        for(int i=0; i<listView.getChildCount(); i++) {
+            listView.getChildAt(i).setBackgroundColor(
+                    getResources().getColor(R.color.event_line_item_bg));
         }
     }
 
@@ -205,6 +207,14 @@ public class MainActivity extends AppCompatActivity implements
                         // start animation to hide the cell
                         verticalCollapseSelectedListItem();
                         mode.finish();
+                        return true;
+                    case R.id.menu_item_show_report:
+                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+                        long lineId = cursorAdapter.getItemId(selectedForRemovalItemIndex);
+                        intent.putExtra(DbSchema.COL_LINE_ID, lineId);
+                        mode.finish();
+
+                        startActivity(intent);
                         return true;
                     default:
                         return false;
@@ -302,7 +312,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void addEventToLine(Object data) {
-        cursorAdapter.getItem(selectedItemIndex);
         // if event is being added to a simple line, just do it, otherwise
         Intent intent = new Intent(MainActivity.this, DbAsyncOpsService.class);
         intent.setAction(DbAsyncOpsService.ACTION_CREATE_EVENT);
@@ -311,8 +320,10 @@ public class MainActivity extends AppCompatActivity implements
         if(data != null) {
             if(data instanceof Integer) {
                 intent.putExtra(DbSchema.COL_DATA, ((Integer) data).intValue());
+                intent.putExtra(DbSchema.COL_LINE_TYPE, LINE_TYPE_INTEGER);
             } else if(data instanceof String) {
                 intent.putExtra(DbSchema.COL_DATA, (String) data);
+                intent.putExtra(DbSchema.COL_LINE_TYPE, LINE_TYPE_STRING);
             }
         }
         suspendInput();
@@ -353,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch(loader.getId()) {
             case EVENT_LINES_LOADER_ID:
+                resetListItemsBgColor();
                 cursorAdapter.swapCursor(cursor);
                 cursorAdapter.notifyDataSetChanged();
                 cursorAdapter.notifyDataSetInvalidated();

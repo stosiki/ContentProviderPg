@@ -6,17 +6,18 @@ package study.stosiki.com.contentproviderpg;
 public class Comments {
     // http://www.grokkingandroid.com/android-tutorial-writing-your-own-content-provider/
 
+    /*** TODO ***/
     // Adding of event lines is OK
-
     // To the create event line dialog
     // -- add verification for non-empty event line title
     // -- add check for unique line title
-
     // add line types
     // override getView in list adapter to:
     // - show different line types
     // - show selected item
 
+
+    // (optimization) in the getView of MainActivity implement Holder-getTag pattern
 
     // ? add more line types e.g. Numeric Range, Mark (same as Range, but F to A)
 
@@ -36,4 +37,12 @@ public class Comments {
     refers to a bunch of nine-patch bitmap images, available in multiple densities. You would need
     to clone and modify all of that to accomplish your green goals.
      */
+
+    /** Done **/
+    // remove event line list item background if another event line was short clicked
+    // remove evenr line list item background after event line was deleted (currently it goes to n+1 element)
+
+
+
+
 }
