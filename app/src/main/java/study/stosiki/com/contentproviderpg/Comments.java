@@ -43,6 +43,15 @@ public class Comments {
     // remove evenr line list item background after event line was deleted (currently it goes to n+1 element)
 
 
+    // TODOs
+    // - add tabs to the ReportActivity (EventList, Chart)
+    // - make it possible to select exactly 2 eventlines
+    // - if two eventlines are selected, both charts are present on the Chart tab
+    //    and another 'Statistics' tab (currently not implemented) is added
+    // EventNumeric and EventStringPropertyDialogFragments please use polymorphism, Bridge, Strategy
+    //    or whatever but clean the mess
+
+
 
 
 }

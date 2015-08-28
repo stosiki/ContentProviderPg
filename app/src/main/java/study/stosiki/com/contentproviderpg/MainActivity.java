@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements
             public View getView(int position, View convertView, ViewGroup parent) {
                 // TODO: ViewHolder etc.
                 View v = super.getView(position, convertView, parent);
+                Object o = getItem(position);
                 return v;
             }
         };
@@ -209,7 +210,8 @@ public class MainActivity extends AppCompatActivity implements
                         mode.finish();
                         return true;
                     case R.id.menu_item_show_report:
-                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+//                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+                        Intent intent = new Intent(MainActivity.this, ChartReportActivity.class);
                         long lineId = cursorAdapter.getItemId(selectedForRemovalItemIndex);
                         intent.putExtra(DbSchema.COL_LINE_ID, lineId);
                         mode.finish();
