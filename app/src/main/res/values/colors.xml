@@ -2,14 +2,9 @@
 <resources>
     <color name="white_paper">#fffffffe</color>
     <color name="deleted_red">#ffff3300</color>
-    <color name="line_to_delete_bg">#ffbbbbbb</color>
+    <color name="selected_event_line_bg">#ffbbbbbb</color>
     <color name="line_normal_bg">#ffeeeeee</color>
     <color name="light_grey">#ffdddddd</color>
     <color name="event_line_item_bg">#ffaaaaaa</color>
-    <color name="white_paper">#fffffe</color>
-    <color name="deleted_red">#ff3300</color>
-    <color name="line_to_delete_bg">#ffbbbbbb</color>
-    <color name="event_line_item_bg">#ffeeeeee</color>
-    <color name="light_grey">#ffdddddd</color>
 
 </resources>

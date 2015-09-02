@@ -10,7 +10,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -51,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements
     public static MainThreadBus eventBus = new MainThreadBus();
 
     private SimpleCursorAdapter cursorAdapter;
-    private int selectedItemIndex;
-    private int selectedForRemovalItemIndex;
+    private int eventLinePositionToAddEventTo;
+    private int[] selectedEventLinePositions;
     private ActionMode actionMode;
     private ListView listView;
     private View undoContainer;
@@ -91,13 +90,18 @@ public class MainActivity extends AppCompatActivity implements
         listView = (ListView)findViewById(android.R.id.list);
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LINES_LOADER_ID, null, this);
+        selectedEventLinePositions = new int[]{-1, -1};
 
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedForRemovalItemIndex = position;
-                changeListItemBgColor(position, R.color.line_to_delete_bg);
+                if(selectedEventLinePositions[0] == -1) {
+                    selectedEventLinePositions[0] = position;
+                } else {
+                    selectedEventLinePositions[1] = position;
+                }
+                highlightSelectedItems();
                 showContextActionBar();
                 return true;
             }
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 resetListItemsBgColor();
 
-                selectedItemIndex = position;
+                eventLinePositionToAddEventTo = position;
                 int eventLineType = Integer.parseInt(
                         (String) ((TextView) view.findViewById(R.id.line_type)).getText());
                 switch(eventLineType) {
@@ -142,11 +146,13 @@ public class MainActivity extends AppCompatActivity implements
         eventBus.register(this);
     }
 
-    private void changeListItemBgColor(int position, int highlightColor) {
+
+
+    private void highlightSelectedItems() {
         int color;
         for(int i=0; i<listView.getChildCount(); i++) {
-            if(i == position) {
-                color = highlightColor;
+            if(i == selectedEventLinePositions[0] || i == selectedEventLinePositions[1]) {
+                color = R.color.selected_event_line_bg;
             } else {
                 color = R.color.event_line_item_bg;
             }
@@ -204,16 +210,22 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_item_delete_eventline:
-                        //deleteEventLine(selectedItemIndex);
+                        //deleteEventLine(eventLinePositionToAddEventTo);
                         // start animation to hide the cell
                         verticalCollapseSelectedListItem();
                         mode.finish();
                         return true;
                     case R.id.menu_item_show_report:
-//                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+//                        Intent intent = new Intent(MainActivity.this, ChartReportActivity.class);
                         Intent intent = new Intent(MainActivity.this, ChartReportActivity.class);
-                        long lineId = cursorAdapter.getItemId(selectedForRemovalItemIndex);
-                        intent.putExtra(DbSchema.COL_LINE_ID, lineId);
+                        long[] lineIds = new long[]{-1, -1};
+                        if(selectedEventLinePositions[0] != -1) {
+                            lineIds[0] = cursorAdapter.getItemId(selectedEventLinePositions[0]);
+                            if(selectedEventLinePositions[1] != -1) {
+                                lineIds[1] = cursorAdapter.getItemId(selectedEventLinePositions[1]);
+                            }
+                        }
+                        intent.putExtra(DbSchema.COL_LINE_ID, lineIds);
                         mode.finish();
 
                         startActivity(intent);
@@ -226,14 +238,15 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 actionMode = null;
-//                selectedItemIndex = -1;
+//                eventLinePositionToAddEventTo = -1;
             }
         });
 
     }
 
     private void verticalCollapseSelectedListItem() {
-        final View selectedItemView = listView.getChildAt(selectedForRemovalItemIndex);
+        final View selectedItemView = listView.getChildAt(selectedEventLinePositions[0]);
+
         Animation.AnimationListener collapseAnimationListener = new Animation.AnimationListener() {
             @Override
             public void onAnimationEnd(Animation arg0) {
@@ -242,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override public void onAnimationRepeat(Animation animation) {}
             @Override public void onAnimationStart(Animation animation) {}
         };
+
         collapse(selectedItemView, collapseAnimationListener);
     }
 
@@ -271,7 +285,8 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onAnimationEnd(Animator animation) {
                 restoreUndoContainerState();
-                deleteEventLine(selectedForRemovalItemIndex);
+                deleteEventLine(selectedEventLinePositions[0]);
+                resetSelection();
             }
 
             private void restoreUndoContainerState() {
@@ -282,6 +297,11 @@ public class MainActivity extends AppCompatActivity implements
         hideUndoAnimator.setStartDelay(2000);
         hideUndoAnimator.start();
 
+    }
+
+    private void resetSelection() {
+        selectedEventLinePositions[0] = -1;
+        selectedEventLinePositions[1] = -1;
     }
 
     public void onUndoClick(View controlView) {
@@ -317,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements
         // if event is being added to a simple line, just do it, otherwise
         Intent intent = new Intent(MainActivity.this, DbAsyncOpsService.class);
         intent.setAction(DbAsyncOpsService.ACTION_CREATE_EVENT);
-        long lineId = cursorAdapter.getItemId(selectedItemIndex);
+        long lineId = cursorAdapter.getItemId(eventLinePositionToAddEventTo);
         intent.putExtra(DbSchema.COL_LINE_ID, lineId);
         if(data != null) {
             if(data instanceof Integer) {

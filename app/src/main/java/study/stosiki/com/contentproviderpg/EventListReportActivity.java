@@ -7,34 +7,29 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-
 import java.util.Date;
-
-import static study.stosiki.com.contentproviderpg.R.layout.event_line_list_item;
 
 /**
  * Created by User on 09/08/2015.
  * Given a name of an event line represent in some way its events
  *
  */
-public class ReportActivity extends AppCompatActivity
+public class EventListReportActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = ReportActivity.class.getSimpleName();
+    private static final String TAG = EventListReportActivity.class.getSimpleName();
 
     private static final int EVENT_LIST_LOADER_ID = 2;
 
     private CursorAdapter cursorAdapter;
-    private long lineId;
+    private long[] lineIds;
     private ListView listView;
 
     @Override
@@ -42,7 +37,7 @@ public class ReportActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 
-        lineId = getIntent().getLongExtra(DbSchema.COL_LINE_ID, -1);
+        lineIds = getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
 
         // create cursor adapter
         cursorAdapter = new CursorAdapter(this, null, 0) {
@@ -71,13 +66,27 @@ public class ReportActivity extends AppCompatActivity
     /** LoaderManager.LoaderCallbacks methods **/
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] selectionArgs = null;
+        String selection = null;
+        if(lineIds[0] != -1 && lineIds[1] == -1) {
+            selectionArgs = new String[1];
+            selection = "=?";
+            selectionArgs[0] = String.valueOf(lineIds[0]);
+        } else if(lineIds[1] != -1) {
+            selectionArgs = new String[2];
+            selectionArgs[0] = String.valueOf(lineIds[0]);
+            selectionArgs[1] = String.valueOf(lineIds[1]);
+            selection = " in(?, ?)";
+        }
+
+
         // get line id(s) from intent
         return new CursorLoader(
                 this,
                 EventLinesContract.Events.CONTENT_URI,
                 EventLinesContract.Events.PROJECTION_ALL,
-                DbSchema.COL_LINE_ID + "=?",
-                new String[]{String.valueOf(lineId)},
+                DbSchema.COL_LINE_ID + selection,
+                selectionArgs,
                 null
         );
     }
