@@ -17,6 +17,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ChartReportActivity"/>
+
         <provider
             android:name=".EventLinesContentProvider"
             android:authorities="com.stosiki.eventlines"
