@@ -17,6 +17,7 @@ public class EventLinesContract {
     private static final String MIME_SUBTYPE_EVENT = "/event";
     private static final String MIME_SUBTYPE_EVENTLINE = "/eventline";
     private static final String MIME_SUBTYPE_EVENTLINE_LIST_ITEM = "/eventline_list_item";
+    private static final String MIME_SUBTYPE_EVENT_GRAPH_DATA = "/event_graph_data";
 
     /* selection clause for ID based queries */
     public static final String SELECTION_ID_BASED = BaseColumns._ID + " = ? ";
@@ -74,6 +75,26 @@ public class EventLinesContract {
                 DbSchema.COL_ID,
                 DbSchema.COL_TITLE,
                 DbSchema.COL_EVENT_COUNT,
+                DbSchema.COL_LINE_TYPE
+        };
+    }
+
+    public static final class EventGraphData {
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(EventLinesContract.CONTENT_URI, DbSchema.VIEW_CHART_REPORT);
+        /* directory MIME type */
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + MIME_SUBTYPE_EVENT_GRAPH_DATA;
+        /* single item type */
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + MIME_SUBTYPE_EVENT_GRAPH_DATA;
+        /* projection of all columns in the event_lines table */
+        public static final String[] PROJECTION_ALL = {
+                DbSchema.COL_ID,
+                DbSchema.COL_TIMESTAMP,
+                DbSchema.COL_LINE_ID,
+                DbSchema.COL_DATA,
+                DbSchema.COL_TITLE,
                 DbSchema.COL_LINE_TYPE
         };
     }

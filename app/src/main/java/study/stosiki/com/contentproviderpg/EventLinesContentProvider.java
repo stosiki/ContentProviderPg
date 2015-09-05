@@ -26,6 +26,7 @@ public class EventLinesContentProvider extends ContentProvider {
     private static final int EVENT_LINE_ID = 4;
     private static final int EVENT_LINE_LIST_DIR = 5;
     private static final int EVENT_LINE_LIST_ID = 6;
+    private static final int EVENT_CHART_DIR = 7;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -36,6 +37,7 @@ public class EventLinesContentProvider extends ContentProvider {
         URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_lines/#", EVENT_LINE_ID);
         URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_line_list_items", EVENT_LINE_LIST_DIR);
         URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "event_line_list_items/#", EVENT_LINE_LIST_ID);
+        URI_MATCHER.addURI(EventLinesContract.AUTHORITY, "events_view", EVENT_CHART_DIR);
     }
 
     private final ThreadLocal<Boolean> batchMode = new ThreadLocal<>();
@@ -64,6 +66,8 @@ public class EventLinesContentProvider extends ContentProvider {
                 return EventLinesContract.EventLineListItem.CONTENT_TYPE;
             case EVENT_LINE_LIST_ID:
                 return EventLinesContract.EventLineListItem.CONTENT_ITEM_TYPE;
+            case EVENT_CHART_DIR:
+                return  EventLinesContract.EventGraphData.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri.toString());
         }
@@ -135,6 +139,9 @@ public class EventLinesContentProvider extends ContentProvider {
                 break;
             case EVENT_LINE_LIST_DIR:
                 queryBuilder.setTables(DbSchema.VIEW_LINE_LIST_ITEMS);
+                break;
+            case EVENT_CHART_DIR:
+                queryBuilder.setTables(DbSchema.VIEW_CHART_REPORT);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri.toString());

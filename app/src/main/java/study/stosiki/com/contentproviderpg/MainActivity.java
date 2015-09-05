@@ -30,6 +30,8 @@ import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -46,12 +48,13 @@ public class MainActivity extends AppCompatActivity implements
     private static final long UNDO_BAR_HIDE_ANIM_DURATION = 1000;
     public static final int LINE_TYPE_INTEGER = 1;
     public static final int LINE_TYPE_STRING = 2;
+    private static final int MAX_SELECTION_SIZE = 2;
 
     public static MainThreadBus eventBus = new MainThreadBus();
 
     private SimpleCursorAdapter cursorAdapter;
     private int eventLinePositionToAddEventTo;
-    private int[] selectedEventLinePositions;
+    private ArrayList<Integer> selectedEventLinePositions;
     private ActionMode actionMode;
     private ListView listView;
     private View undoContainer;
@@ -90,18 +93,15 @@ public class MainActivity extends AppCompatActivity implements
         listView = (ListView)findViewById(android.R.id.list);
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LINES_LOADER_ID, null, this);
-        selectedEventLinePositions = new int[]{-1, -1};
+
+        selectedEventLinePositions = new ArrayList<Integer>();
+        resetSelection();
 
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if(selectedEventLinePositions[0] == -1) {
-                    selectedEventLinePositions[0] = position;
-                } else {
-                    selectedEventLinePositions[1] = position;
-                }
-                highlightSelectedItems();
+                setSelected(position, !isSelected(position));
                 showContextActionBar();
                 return true;
             }
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements
                     actionMode.finish();
                 }
 
-                resetListItemsBgColor();
+                resetSelection();
 
                 eventLinePositionToAddEventTo = position;
                 int eventLineType = Integer.parseInt(
@@ -146,12 +146,16 @@ public class MainActivity extends AppCompatActivity implements
         eventBus.register(this);
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resetSelection();
+    }
 
     private void highlightSelectedItems() {
         int color;
         for(int i=0; i<listView.getChildCount(); i++) {
-            if(i == selectedEventLinePositions[0] || i == selectedEventLinePositions[1]) {
+            if(isSelected(i)) {
                 color = R.color.selected_event_line_bg;
             } else {
                 color = R.color.event_line_item_bg;
@@ -218,12 +222,9 @@ public class MainActivity extends AppCompatActivity implements
                     case R.id.menu_item_show_report:
 //                        Intent intent = new Intent(MainActivity.this, ChartReportActivity.class);
                         Intent intent = new Intent(MainActivity.this, ChartReportActivity.class);
-                        long[] lineIds = new long[]{-1, -1};
-                        if(selectedEventLinePositions[0] != -1) {
-                            lineIds[0] = cursorAdapter.getItemId(selectedEventLinePositions[0]);
-                            if(selectedEventLinePositions[1] != -1) {
-                                lineIds[1] = cursorAdapter.getItemId(selectedEventLinePositions[1]);
-                            }
+                        long[] lineIds = new long[selectedEventLinePositions.size()];
+                        for(int i=0; i<selectedEventLinePositions.size(); i++) {
+                            lineIds[i] = cursorAdapter.getItemId(selectedEventLinePositions.get(i));
                         }
                         intent.putExtra(DbSchema.COL_LINE_ID, lineIds);
                         mode.finish();
@@ -245,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void verticalCollapseSelectedListItem() {
-        final View selectedItemView = listView.getChildAt(selectedEventLinePositions[0]);
+        final View selectedItemView = listView.getChildAt(selectedEventLinePositions.get(0));
 
         Animation.AnimationListener collapseAnimationListener = new Animation.AnimationListener() {
             @Override
@@ -285,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onAnimationEnd(Animator animation) {
                 restoreUndoContainerState();
-                deleteEventLine(selectedEventLinePositions[0]);
+                deleteEventLine(selectedEventLinePositions.get(0));
                 resetSelection();
             }
 
@@ -300,8 +301,26 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void resetSelection() {
-        selectedEventLinePositions[0] = -1;
-        selectedEventLinePositions[1] = -1;
+        selectedEventLinePositions.clear();
+        highlightSelectedItems();
+    }
+
+    private boolean isSelected(int position) {
+        for(Integer idx : selectedEventLinePositions) {
+            if(idx == position) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void setSelected(int position, boolean selected) {
+        if(selected || selectedEventLinePositions.size() <= MAX_SELECTION_SIZE) {
+            selectedEventLinePositions.add(position);
+        } else {
+            selectedEventLinePositions.remove(position);
+        }
+        highlightSelectedItems();
     }
 
     public void onUndoClick(View controlView) {

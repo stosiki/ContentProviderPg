@@ -10,6 +10,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
     >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        />
+
     <ListView
         android:id="@android:id/list"
         android:divider="@color/light_grey"
@@ -17,6 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/undo_bar"
         android:orientation="horizontal"

@@ -49,6 +49,9 @@ import org.afree.data.time.TimeSeriesCollection;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.afree.chart.ChartFactory;
 import org.afree.chart.AFreeChart;
@@ -61,16 +64,24 @@ import org.afree.data.time.TimeSeries;
 import org.afree.data.time.TimeSeriesCollection;
 import org.afree.data.xy.XYDataset;
 import org.afree.graphics.SolidColor;
+import org.afree.graphics.geom.OvalShape;
+import org.afree.graphics.geom.Shape;
 import org.afree.ui.RectangleInsets;
+import org.afree.util.ShapeUtilities;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.util.Log;
 
 /**
  * TimeSeriesChartDemo01View
  */
 public class TimeSeriesChartDemo01View extends DemoView {
+
+    private static final String TAG = TimeSeriesChartDemo01View.class.getSimpleName();
+
+    private static final Shape CIRCLE_SHAPE = new OvalShape(0,0,15,15);
 
     /**
      * constructor
@@ -94,9 +105,9 @@ public class TimeSeriesChartDemo01View extends DemoView {
     private static AFreeChart createChart(XYDataset dataset) {
 
         AFreeChart chart = ChartFactory.createTimeSeriesChart(
-                "Legal & General Unit Trust Prices",  // title
+                "",  // title
                 "Date",             // x-axis label
-                "Price Per Unit",   // y-axis label
+                "",   // y-axis label
                 dataset,            // data
                 true,               // create legend?
                 true,               // generate tooltips?
@@ -118,14 +129,21 @@ public class TimeSeriesChartDemo01View extends DemoView {
             XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
             renderer.setBaseShapesVisible(true);
             renderer.setBaseShapesFilled(true);
+//            Shape cross = ShapeUtilities..createDiagonalCross(3, 1);
+            renderer.setBaseShape(CIRCLE_SHAPE);
+            renderer.setSeriesShape(0, CIRCLE_SHAPE);
+            renderer.setSeriesShapesFilled(0, true);
+            renderer.setSeriesShapesVisible(0, true);
+
+            renderer.setSeriesStroke(0, 5.0f);
+//            renderer.setSeriesLinesVisible(0, false);
             renderer.setDrawSeriesLineAsPath(true);
         }
 
         DateAxis axis = (DateAxis) plot.getDomainAxis();
-        axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
+//        axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
 
         return chart;
-
     }
 
     /**
@@ -134,16 +152,39 @@ public class TimeSeriesChartDemo01View extends DemoView {
      * @return The dataset.
      */
     private static XYDataset createDataset(Cursor cursor) {
-
-        TimeSeries s1 = new TimeSeries("L&G European Index Trust");
+        Map<Integer, TimeSeries> dataSeries = new HashMap<Integer, TimeSeries>();
         while (cursor.moveToNext()) {
+            /*
+                DbSchema.COL_ID,
+                DbSchema.COL_TIMESTAMP,
+                DbSchema.COL_LINE_ID,
+                DbSchema.COL_DATA,
+                DbSchema.COL_TITLE,
+                DbSchema.COL_LINE_TYPE
+
+             */
             long timestamp = cursor.getLong(1);
-            String data = cursor.getString(2);
-            s1.add(new FixedMillisecond(timestamp), Integer.parseInt(data));
+            int lineId = cursor.getInt(2);
+            String data = cursor.getString(3);
+            String lineTitle = cursor.getString(4);
+            int lineType = cursor.getInt(5);
+
+            if(dataSeries.containsKey(lineId) == false) {
+                TimeSeries series = new TimeSeries(lineTitle);
+                dataSeries.put(lineId, series);
+            }
+            TimeSeries series = dataSeries.get(lineId);
+            if(data != null) {
+                series.add(new FixedMillisecond(timestamp), Integer.parseInt(data));
+            } else {
+                series.add(new FixedMillisecond(timestamp), 0);
+            }
         }
 
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(s1);
+        for(TimeSeries series : dataSeries.values()) {
+            dataset.addSeries(series);
+        }
 
         return dataset;
     }

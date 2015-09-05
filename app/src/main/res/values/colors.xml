@@ -2,9 +2,13 @@
 <resources>
     <color name="white_paper">#fffffffe</color>
     <color name="deleted_red">#ffff3300</color>
-    <color name="line_to_delete_bg">#ffbbbbbb</color>
+    <color name="selected_event_line_bg">#ffbbbbbb</color>
     <color name="line_normal_bg">#fffffffe</color>
     <color name="light_grey">#ffdddddd</color>
     <color name="event_line_item_bg">#fffffffa</color>
+
+    <color name="ColorPrimary">#00897B</color>
+    <color name="ColorPrimaryDark">#00695C</color>
+    <color name="tabsScrollColor">#004D40</color>
 
 </resources>
