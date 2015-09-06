@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements
     private ListView listView;
     private View undoContainer;
     private FloatingActionButton addEventLineControl;
+    private Toolbar toolbar;
 
     private ObjectAnimator hideUndoAnimator;
     private Animation listItemCollapseAnimation;
@@ -67,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
 
         cursorAdapter = new SimpleCursorAdapter(
                 this,
@@ -220,8 +225,8 @@ public class MainActivity extends AppCompatActivity implements
                         mode.finish();
                         return true;
                     case R.id.menu_item_show_report:
-//                        Intent intent = new Intent(MainActivity.this, ChartReportActivity.class);
-                        Intent intent = new Intent(MainActivity.this, ChartReportActivity.class);
+//                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
                         long[] lineIds = new long[selectedEventLinePositions.size()];
                         for(int i=0; i<selectedEventLinePositions.size(); i++) {
                             lineIds[i] = cursorAdapter.getItemId(selectedEventLinePositions.get(i));

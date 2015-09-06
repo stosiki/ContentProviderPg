@@ -1,12 +1,14 @@
 package study.stosiki.com.contentproviderpg;
 
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v4.content.CursorLoader;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,32 +20,30 @@ import android.widget.TextView;
 import java.util.Date;
 
 /**
- * Created by User on 09/08/2015.
- * Given a name of an event line represent in some way its events
- *
+ * Created by Edwin on 15/02/2015.
  */
-public class EventListReportActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = EventListReportActivity.class.getSimpleName();
+public class ListReportFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String TAG = ListReportFragment.class.getSimpleName();
 
-    private static final int EVENT_LIST_LOADER_ID = 2;
+    private ViewGroup listHolder;
+    private static final int EVENT_LIST_LOADER_ID = 3;
 
     private CursorAdapter cursorAdapter;
     private long[] lineIds;
     private ListView listView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
-        lineIds = getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
+        lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
 
         // create cursor adapter
-        cursorAdapter = new CursorAdapter(this, null, 0) {
+        cursorAdapter = new CursorAdapter(getActivity(), null, 0) {
             @Override
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater)
+                        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 return inflater.inflate(R.layout.event_list_item, parent, false);
             }
 
@@ -57,10 +57,13 @@ public class EventListReportActivity extends AppCompatActivity
             }
         };
 
-        listView = (ListView)findViewById(R.id.event_list);
+        ViewGroup layout = (ViewGroup)getActivity().
+                getLayoutInflater().inflate(R.layout.activity_report, container, false);
+        listView = (ListView)layout.findViewById(R.id.event_list);
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, this);
 
+        return listView;
     }
 
     /** LoaderManager.LoaderCallbacks methods **/
@@ -68,11 +71,11 @@ public class EventListReportActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] selectionArgs = null;
         String selection = null;
-        if(lineIds[0] != -1 && lineIds[1] == -1) {
+        if(lineIds.length == 1) {
             selectionArgs = new String[1];
             selection = "=?";
             selectionArgs[0] = String.valueOf(lineIds[0]);
-        } else if(lineIds[1] != -1) {
+        } else if(lineIds.length == 2) {
             selectionArgs = new String[2];
             selectionArgs[0] = String.valueOf(lineIds[0]);
             selectionArgs[1] = String.valueOf(lineIds[1]);
@@ -82,7 +85,7 @@ public class EventListReportActivity extends AppCompatActivity
 
         // get line id(s) from intent
         return new CursorLoader(
-                this,
+                getActivity(),
                 EventLinesContract.Events.CONTENT_URI,
                 EventLinesContract.Events.PROJECTION_ALL,
                 DbSchema.COL_LINE_ID + selection,
