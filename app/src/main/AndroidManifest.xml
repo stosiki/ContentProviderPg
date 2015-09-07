@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ChartReportActivity"/>
+        <activity android:name=".ReportActivity"/>
 
         <provider
             android:name=".EventLinesContentProvider"
