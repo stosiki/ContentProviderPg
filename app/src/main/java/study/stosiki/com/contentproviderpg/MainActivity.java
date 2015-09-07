@@ -47,20 +47,28 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final long LIST_ITEM_COLLAPSE_ANIM_DURATION = 500;
     private static final long UNDO_BAR_HIDE_ANIM_DURATION = 1000;
+
     public static final int LINE_TYPE_INTEGER = 1;
     public static final int LINE_TYPE_STRING = 2;
+
     private static final int MAX_SELECTION_SIZE = 2;
+
+    private static final int MODE_LINE_SELECTED = 1;
+    private static final int MODE_NORMAL = 2;
 
     public static MainThreadBus eventBus = new MainThreadBus();
 
     private SimpleCursorAdapter cursorAdapter;
     private int eventLinePositionToAddEventTo;
     private ArrayList<Integer> selectedEventLinePositions;
-    private ActionMode actionMode;
+//    private ActionMode actionMode;
     private ListView listView;
     private View undoContainer;
     private FloatingActionButton addEventLineControl;
     private Toolbar toolbar;
+
+    /** state of activity, determines which menu items are available and user actions permitted **/
+    private int activityMode;
 
     private ObjectAnimator hideUndoAnimator;
     private Animation listItemCollapseAnimation;
@@ -69,6 +77,16 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        addEventLineControl = (FloatingActionButton)findViewById(R.id.add_event_line_widget);
+        addEventLineControl.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addEventLine();
+            }
+        });
+
+        activityMode = MODE_NORMAL;
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
@@ -107,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 setSelected(position, !isSelected(position));
-                showContextActionBar();
+//                showContextActionBar();
                 return true;
             }
         });
@@ -115,16 +133,18 @@ public class MainActivity extends AppCompatActivity implements
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(actionMode != null) {
+/*
+                if (actionMode != null) {
                     actionMode.finish();
                 }
 
+*/
                 resetSelection();
 
                 eventLinePositionToAddEventTo = position;
                 int eventLineType = Integer.parseInt(
                         (String) ((TextView) view.findViewById(R.id.line_type)).getText());
-                switch(eventLineType) {
+                switch (eventLineType) {
                     case 0:
                         addEventToLine(null);
                         break;
@@ -137,14 +157,6 @@ public class MainActivity extends AppCompatActivity implements
                         showStringPropertyDialog();
                         break;
                 }
-            }
-        });
-
-        addEventLineControl = (FloatingActionButton)findViewById(R.id.add_event_line_widget);
-        addEventLineControl.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addEventLine();
             }
         });
 
@@ -201,54 +213,6 @@ public class MainActivity extends AppCompatActivity implements
         propertyDialog.show(fm, "stringPropertyDialog");
     }
 
-    private void showContextActionBar() {
-        actionMode = startActionMode(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                MenuInflater menuInflater = mode.getMenuInflater();
-                menuInflater.inflate(R.menu.action_mode_row_selected, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_item_delete_eventline:
-                        //deleteEventLine(eventLinePositionToAddEventTo);
-                        // start animation to hide the cell
-                        verticalCollapseSelectedListItem();
-                        mode.finish();
-                        return true;
-                    case R.id.menu_item_show_report:
-//                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
-                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
-                        long[] lineIds = new long[selectedEventLinePositions.size()];
-                        for(int i=0; i<selectedEventLinePositions.size(); i++) {
-                            lineIds[i] = cursorAdapter.getItemId(selectedEventLinePositions.get(i));
-                        }
-                        intent.putExtra(DbSchema.COL_LINE_ID, lineIds);
-                        mode.finish();
-
-                        startActivity(intent);
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                actionMode = null;
-//                eventLinePositionToAddEventTo = -1;
-            }
-        });
-
-    }
 
     private void verticalCollapseSelectedListItem() {
         final View selectedItemView = listView.getChildAt(selectedEventLinePositions.get(0));
@@ -307,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void resetSelection() {
         selectedEventLinePositions.clear();
+        setMode(MODE_NORMAL);
         highlightSelectedItems();
     }
 
@@ -320,12 +285,21 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setSelected(int position, boolean selected) {
-        if(selected || selectedEventLinePositions.size() <= MAX_SELECTION_SIZE) {
+        if(selected && selectedEventLinePositions.size() <= MAX_SELECTION_SIZE) {
             selectedEventLinePositions.add(position);
         } else {
-            selectedEventLinePositions.remove(position);
+            // need to wrap int because otherwise treated as an index by remove
+            selectedEventLinePositions.remove(new Integer(position));
         }
+
+        setMode(selectedEventLinePositions.size() > 0 ? MODE_LINE_SELECTED : MODE_NORMAL);
         highlightSelectedItems();
+    }
+
+    private void setMode(int mode) {
+        activityMode = mode;
+        invalidateOptionsMenu();
+        addEventLineControl.setEnabled(activityMode == MODE_NORMAL);
     }
 
     public void onUndoClick(View controlView) {
@@ -379,19 +353,42 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        switch (activityMode) {
+            case MODE_NORMAL:
+                getMenuInflater().inflate(R.menu.menu_main, menu);
+                break;
+            case MODE_LINE_SELECTED:
+                getMenuInflater().inflate(R.menu.action_mode_row_selected, menu);
+                break;
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch (item.getItemId()) {
+            case R.id.menu_item_delete_eventline:
+                //deleteEventLine(eventLinePositionToAddEventTo);
+                // start animation to hide the cell
+                verticalCollapseSelectedListItem();
+                setMode(MODE_NORMAL);
+                return true;
+            case R.id.menu_item_show_report:
+//                        Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+                Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+                long[] lineIds = new long[selectedEventLinePositions.size()];
+                for(int i=0; i<selectedEventLinePositions.size(); i++) {
+                    lineIds[i] = cursorAdapter.getItemId(selectedEventLinePositions.get(i));
+                }
+                intent.putExtra(DbSchema.COL_LINE_ID, lineIds);
+                setMode(MODE_NORMAL);
 
-        return super.onOptionsItemSelected(item);
-    }
+                startActivity(intent);
+                return true;
+            default:
+                return false;
+        }    }
 
 
     @Override
