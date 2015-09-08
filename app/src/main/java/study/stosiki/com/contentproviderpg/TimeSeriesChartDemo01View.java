@@ -44,6 +44,9 @@ package study.stosiki.com.contentproviderpg;
  * 19-Nov-2010 : Version 0.0.1 (NM);
  */
 
+import org.afree.chart.axis.NumberAxis;
+import org.afree.chart.axis.TickUnit;
+import org.afree.chart.axis.TickUnitSource;
 import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
 
@@ -65,6 +68,7 @@ import org.afree.data.time.TimeSeriesCollection;
 import org.afree.data.xy.XYDataset;
 import org.afree.graphics.SolidColor;
 import org.afree.graphics.geom.OvalShape;
+import org.afree.graphics.geom.RectShape;
 import org.afree.graphics.geom.Shape;
 import org.afree.ui.RectangleInsets;
 import org.afree.util.ShapeUtilities;
@@ -81,7 +85,9 @@ public class TimeSeriesChartDemo01View extends DemoView {
 
     private static final String TAG = TimeSeriesChartDemo01View.class.getSimpleName();
 
-    private static final Shape CIRCLE_SHAPE = new OvalShape(0,0,15,15);
+    private static final Shape CIRCLE_SHAPE = new OvalShape(-5, -5, 10, 10);
+    private static final Shape SQUARE_SHAPE = new RectShape(-5, -5, 10, 10);
+    private static final Shape[] NODE_SHAPES = new Shape[]{CIRCLE_SHAPE, SQUARE_SHAPE};
 
     /**
      * constructor
@@ -121,8 +127,14 @@ public class TimeSeriesChartDemo01View extends DemoView {
         plot.setDomainGridlinePaintType(new SolidColor(Color.WHITE));
         plot.setRangeGridlinePaintType(new SolidColor(Color.WHITE));
         plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
-        plot.setDomainCrosshairVisible(true);
-        plot.setRangeCrosshairVisible(true);
+
+        // experimenting with settings
+        plot.setDomainPannable(false);
+        plot.setRangePannable(false);
+        plot.getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+//        plot.setDomainCrosshairVisible(true);
+//        plot.setRangeCrosshairVisible(true);
 
         XYItemRenderer r = plot.getRenderer();
         if (r instanceof XYLineAndShapeRenderer) {
@@ -131,11 +143,14 @@ public class TimeSeriesChartDemo01View extends DemoView {
             renderer.setBaseShapesFilled(true);
 //            Shape cross = ShapeUtilities..createDiagonalCross(3, 1);
             renderer.setBaseShape(CIRCLE_SHAPE);
-            renderer.setSeriesShape(0, CIRCLE_SHAPE);
-            renderer.setSeriesShapesFilled(0, true);
-            renderer.setSeriesShapesVisible(0, true);
+            for(int i=0; i<MainActivity.MAX_SELECTION_SIZE; i++) {
+                renderer.setSeriesShape(i, NODE_SHAPES[i]);
+                renderer.setSeriesShapesFilled(i, true);
+                renderer.setSeriesShapesVisible(i, true);
 
-            renderer.setSeriesStroke(0, 5.0f);
+                renderer.setSeriesStroke(i, 5.0f);
+            }
+
 //            renderer.setSeriesLinesVisible(0, false);
             renderer.setDrawSeriesLineAsPath(true);
         }

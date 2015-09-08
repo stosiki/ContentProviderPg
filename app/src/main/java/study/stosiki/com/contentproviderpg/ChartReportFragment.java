@@ -1,7 +1,10 @@
 package study.stosiki.com.contentproviderpg;
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -9,9 +12,16 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by Edwin on 15/02/2015.
@@ -40,6 +50,75 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
                 getActivity().getLayoutInflater().inflate(R.layout.tab_1, container, false);
         return chartHolder;
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.chart_view_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_save:
+                saveChartAsImage();
+                break;
+
+        }
+        return true;
+    }
+
+    private void saveChartAsImage() {
+        if(isExternalStorageWritable() == false) {
+            //TODO: give some error indication
+            return;
+        }
+
+        View v = getView();
+        Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        v.draw(canvas);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(getChartDirectory() + "/chart1.png");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+            fos.flush();
+            fos.close();
+            fos = null;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                    fos = null;
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+    }
+
+
+    public File getChartDirectory() {
+        // Get the directory for the user's public pictures directory.
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "EventLinesCharts");
+        if (file.mkdirs() == false) {
+            Log.e(TAG, "Directory not created");
+        }
+        return file;
+    }
+
     /** LoaderManager.LoaderCallbacks methods **/
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

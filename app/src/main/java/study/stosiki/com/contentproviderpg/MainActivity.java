@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final int LINE_TYPE_INTEGER = 1;
     public static final int LINE_TYPE_STRING = 2;
 
-    private static final int MAX_SELECTION_SIZE = 2;
+    public static final int MAX_SELECTION_SIZE = 2;
 
     private static final int MODE_LINE_SELECTED = 1;
     private static final int MODE_NORMAL = 2;
