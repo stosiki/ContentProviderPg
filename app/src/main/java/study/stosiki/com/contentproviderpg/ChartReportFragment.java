@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,12 +37,12 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
     private long[] lineIds;
 
     ViewGroup chartHolder;
+    private Toolbar toolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
-
         lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
 
         // create cursor adapter
@@ -49,22 +51,6 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
         chartHolder = (ViewGroup)
                 getActivity().getLayoutInflater().inflate(R.layout.tab_1, container, false);
         return chartHolder;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.chart_view_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_item_save:
-                saveChartAsImage();
-                break;
-
-        }
-        return true;
     }
 
     private void saveChartAsImage() {
