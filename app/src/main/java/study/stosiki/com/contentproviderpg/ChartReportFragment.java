@@ -42,6 +42,7 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
 //        return super.onCreateView(inflater, container, savedInstanceState);
         lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
 
@@ -53,56 +54,10 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
         return chartHolder;
     }
 
-    private void saveChartAsImage() {
-        if(isExternalStorageWritable() == false) {
-            //TODO: give some error indication
-            return;
-        }
-
-        View v = getView();
-        Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        v.draw(canvas);
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(getChartDirectory() + "/chart1.png");
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-
-            fos.flush();
-            fos.close();
-            fos = null;
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                    fos = null;
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /* Checks if external storage is available for read and write */
-    public boolean isExternalStorageWritable() {
-        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
-    }
-
-
-    public File getChartDirectory() {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "EventLinesCharts");
-        if (file.mkdirs() == false) {
-            Log.e(TAG, "Directory not created");
-        }
-        return file;
+    @Nullable
+    @Override
+    public View getView() {
+        return chartHolder;
     }
 
     /** LoaderManager.LoaderCallbacks methods **/

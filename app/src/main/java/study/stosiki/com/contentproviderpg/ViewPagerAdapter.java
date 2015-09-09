@@ -15,6 +15,9 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     int NumbOfTabs; // Store the number of tabs, this will also be passed when the ViewPagerAdapter is created
 
+    private ChartReportFragment chartReportFragment;
+    private ListReportFragment listReportFragment;
+
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public ViewPagerAdapter(FragmentManager fm,CharSequence mTitles[], int mNumbOfTabsumb) {
@@ -29,14 +32,16 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if(position == 0) // if the position is 0 we are returning the First tab
-        {
-            ChartReportFragment chartReportFragment = new ChartReportFragment();
+        if(position == 0) {
+            if(chartReportFragment == null) {
+                chartReportFragment = new ChartReportFragment();
+            }
             return chartReportFragment;
         }
-        else             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
-        {
-            ListReportFragment listReportFragment = new ListReportFragment();
+        else {
+            if(listReportFragment == null) {
+                listReportFragment = new ListReportFragment();
+            }
             return listReportFragment;
         }
 
