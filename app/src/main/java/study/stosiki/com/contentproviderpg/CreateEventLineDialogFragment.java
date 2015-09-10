@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -56,7 +57,9 @@ public class CreateEventLineDialogFragment extends DialogFragment {
         view = inflater.inflate(R.layout.create_event_line_dialog, null);
         dialogBuilder.setView(view);
 
-        return dialogBuilder.create();
+        Dialog dialog = dialogBuilder.create();
+        dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        return dialog;
     }
 
     @Override

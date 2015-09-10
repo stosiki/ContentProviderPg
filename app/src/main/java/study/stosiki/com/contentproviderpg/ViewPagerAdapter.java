@@ -15,9 +15,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     int NumbOfTabs; // Store the number of tabs, this will also be passed when the ViewPagerAdapter is created
 
-    private ChartReportFragment chartReportFragment;
-    private ListReportFragment listReportFragment;
-
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public ViewPagerAdapter(FragmentManager fm,CharSequence mTitles[], int mNumbOfTabsumb) {
@@ -31,20 +28,15 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     //This method return the fragment for the every position in the View Pager
     @Override
     public Fragment getItem(int position) {
-
-        if(position == 0) {
-            if(chartReportFragment == null) {
-                chartReportFragment = new ChartReportFragment();
-            }
-            return chartReportFragment;
+        switch(position) {
+            case 0:
+                return new ChartReportFragment();
+            case 1:
+                return new ListReportFragment();
+//                return new EmptyFragment();
+            default:
+                throw new IllegalArgumentException("Tab index out of bounds");
         }
-        else {
-            if(listReportFragment == null) {
-                listReportFragment = new ListReportFragment();
-            }
-            return listReportFragment;
-        }
-
     }
 
     // This method return the titles for the Tabs in the Tab Strip

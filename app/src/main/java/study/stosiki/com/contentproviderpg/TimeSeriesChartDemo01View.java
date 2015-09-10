@@ -65,6 +65,7 @@ import org.afree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.afree.data.time.Month;
 import org.afree.data.time.TimeSeries;
 import org.afree.data.time.TimeSeriesCollection;
+import org.afree.data.time.TimeSeriesDataItem;
 import org.afree.data.xy.XYDataset;
 import org.afree.graphics.SolidColor;
 import org.afree.graphics.geom.OvalShape;
@@ -137,6 +138,7 @@ public class TimeSeriesChartDemo01View extends DemoView {
 //        plot.setRangeCrosshairVisible(true);
 
         XYItemRenderer r = plot.getRenderer();
+        //TODO: graphical properties of the charts have to be adjusted according to the dataset
         if (r instanceof XYLineAndShapeRenderer) {
             XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
             renderer.setBaseShapesVisible(true);
@@ -190,7 +192,13 @@ public class TimeSeriesChartDemo01View extends DemoView {
             }
             TimeSeries series = dataSeries.get(lineId);
             if(data != null) {
-                series.add(new FixedMillisecond(timestamp), Integer.parseInt(data));
+                if(lineType == MainActivity.LINE_TYPE_INTEGER) {
+                    series.add(new FixedMillisecond(timestamp), Integer.parseInt(data));
+                } else if(lineType == MainActivity.LINE_TYPE_STRING) {
+                    //TODO: subst hardcoded 1 for something meaningful, find a way to
+                    // add string labels to the chart (is it a marker?)
+                    series.add(new FixedMillisecond(timestamp), new Integer(1));
+                }
             } else {
                 series.add(new FixedMillisecond(timestamp), 0);
             }

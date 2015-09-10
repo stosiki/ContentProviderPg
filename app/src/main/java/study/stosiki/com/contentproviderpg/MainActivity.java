@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 setSelected(position, !isSelected(position));
-//                showContextActionBar();
                 return true;
             }
         });
@@ -133,12 +132,6 @@ public class MainActivity extends AppCompatActivity implements
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-/*
-                if (actionMode != null) {
-                    actionMode.finish();
-                }
-
-*/
                 resetSelection();
 
                 eventLinePositionToAddEventTo = position;
@@ -439,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements
         getLoaderManager().restartLoader(EVENT_LINES_LOADER_ID, null, this);
         Log.d(TAG, "Loader restarted");
         resumeInput();
+        highlightSelectedItems();
     }
 
     private void resumeInput() {

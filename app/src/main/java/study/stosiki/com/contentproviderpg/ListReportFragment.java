@@ -30,7 +30,6 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
 
     private CursorAdapter cursorAdapter;
     private long[] lineIds;
-    private ListView listView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -39,6 +38,8 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
         lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
 
         // create cursor adapter
+
+
         cursorAdapter = new CursorAdapter(getActivity(), null, 0) {
             @Override
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -57,13 +58,15 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
             }
         };
 
+
         ViewGroup layout = (ViewGroup)getActivity().
-                getLayoutInflater().inflate(R.layout.activity_report, container, false);
-        listView = (ListView)layout.findViewById(R.id.event_list);
+                getLayoutInflater().inflate(R.layout.activity_report, null);
+        ListView listView = (ListView)layout.findViewById(R.id.event_list);
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, this);
 
-        return listView;
+//        return listView;
+        return layout;
     }
 
     /** LoaderManager.LoaderCallbacks methods **/

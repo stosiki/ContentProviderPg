@@ -36,29 +36,36 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
     private CursorAdapter cursorAdapter;
     private long[] lineIds;
 
-    ViewGroup chartHolder;
-    private Toolbar toolbar;
+//    ViewGroup chartHolder;
+//    private Toolbar toolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-//        return super.onCreateView(inflater, container, savedInstanceState);
+        Log.d(TAG, "ChartReportFragment::onCreateView()");
         lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
-
-        // create cursor adapter
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, ChartReportFragment.this);
+//        container.removeAllViews();
 
-        chartHolder = (ViewGroup)
-                getActivity().getLayoutInflater().inflate(R.layout.tab_1, container, false);
+        ViewGroup chartHolder = (ViewGroup)inflater.inflate(R.layout.tab_1, container, false);
+/*
+        if(chartHolder.getParent() != null) {
+            ((ViewGroup) chartHolder.getParent()).removeAllViews();
+        }
+*/
+
         return chartHolder;
+
+//        return new View(getActivity());
     }
 
+/*
     @Nullable
     @Override
     public View getView() {
         return chartHolder;
     }
+*/
 
     /** LoaderManager.LoaderCallbacks methods **/
     @Override
@@ -102,8 +109,9 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
     }
 
     private void setChart(Cursor cursor) {
+        Log.d(TAG, "setChart");
         TimeSeriesChartDemo01View mView = new TimeSeriesChartDemo01View(getActivity(), cursor);
-        chartHolder.addView(mView);
+        ((ViewGroup)getView()).addView(mView);
     }
 
     @Override
