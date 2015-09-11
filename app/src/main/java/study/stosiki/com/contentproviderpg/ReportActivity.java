@@ -1,6 +1,5 @@
 package study.stosiki.com.contentproviderpg;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,9 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -22,6 +19,7 @@ import android.widget.ListView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by User on 09/08/2015.
@@ -89,12 +87,23 @@ public class ReportActivity extends AppCompatActivity
     }
 
     private void saveChartToFile() {
-        Fragment chartReportFragment = adapter.getItem(0);
+//        Fragment chartReportFragment = adapter.getItem(0);
+        Fragment chartReportFragment = findChartFragment();
         View fragmentView = chartReportFragment.getView();
         // TODO: remove hardcoded filename
         File outFile = new File(getChartDirectory() + "/chart1.png");
         saveViewAsImage(fragmentView, outFile);
 
+    }
+
+    private Fragment findChartFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for(Fragment f : fragments) {
+            if(f instanceof ChartReportFragment) {
+                return f;
+            }
+        }
+        return null;
     }
 
 

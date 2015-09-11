@@ -60,7 +60,7 @@ public class EventNumericPropertyDialogFragment  extends DialogFragment {
         dialogBuilder.setView(view);
 
         Dialog dialog = dialogBuilder.create();
-        dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         return dialog;
     }
 
