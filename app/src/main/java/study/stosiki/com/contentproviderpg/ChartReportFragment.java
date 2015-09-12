@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,30 +32,23 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "ChartReportFragment::onCreateView()");
+
+//        return super.onCreateView(inflater, container, savedInstanceState);
         lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, ChartReportFragment.this);
-//        container.removeAllViews();
 
-        chartHolder = (ViewGroup)inflater.inflate(R.layout.tab_1, container, false);
-/*
-        if(chartHolder.getParent() != null) {
-            ((ViewGroup) chartHolder.getParent()).removeAllViews();
-        }
-*/
-
+        chartHolder = (ViewGroup)
+                getActivity().getLayoutInflater().inflate(R.layout.chart_report_fragment, container, false);
         return chartHolder;
 
 //        return new View(getActivity());
     }
-
 
     @Nullable
     @Override
     public View getView() {
         return chartHolder;
     }
-
 
     /** LoaderManager.LoaderCallbacks methods **/
     @Override
