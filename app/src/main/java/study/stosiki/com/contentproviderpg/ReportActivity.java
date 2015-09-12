@@ -1,6 +1,5 @@
 package study.stosiki.com.contentproviderpg;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,9 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -22,6 +19,8 @@ import android.widget.ListView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by User on 09/08/2015.
@@ -34,6 +33,8 @@ public class ReportActivity extends AppCompatActivity
 
     private static final CharSequence TITLES[]={"Home","Events"};
     private static final int NUM_TABS =2;
+    private static final int CHART_TAB = 0;
+    private static final int PLAIN_LOG_TAB = 1;
 
     private ListView listView;
 
@@ -45,7 +46,7 @@ public class ReportActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chart_activity);
+        setContentView(R.layout.activity_report);
 
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -84,19 +85,53 @@ public class ReportActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // try to find out which tab is visible, because action is context dependent
+        int currentTabIndex = pager.getCurrentItem();
         switch (item.getItemId()) {
             case R.id.menu_item_save:
-                saveChartToFile();
+                switch (currentTabIndex) {
+                    case CHART_TAB:
+                        saveChartToFile();
+                        break;
+                    case PLAIN_LOG_TAB:
+                        saveLogToFile();
+                        break;
+                }
                 break;
             case R.id.menu_item_share:
-                saveChartToFile();
-                Intent share = new Intent(Intent.ACTION_SEND);
-                share.setType("image/png");
-                share.putExtra(Intent.EXTRA_STREAM, Uri.parse(getChartDirectory().toString() + "/chart1.png"));
-                startActivity(Intent.createChooser(share, "Share Image"));
-
+                switch (currentTabIndex) {
+                    case CHART_TAB:
+                        saveChartToFile();
+                        startShareImageActivity();
+                        break;
+                    case PLAIN_LOG_TAB:
+                        saveLogToFile();
+                        startShareLogActivity();
+                        break;
+                }
         }
         return true;
+    }
+
+    private void startShareLogActivity() {
+        //TODO: Implement
+        Log.d(TAG, "startShareLogActivity is not yet implemented");
+    }
+
+    /**
+     * saves the log to CSV file
+     */
+    private void saveLogToFile() {
+        //TODO: Implement it
+        Log.d(TAG, "saveLogToFile is not yet implemented");
+    }
+
+    private void startShareImageActivity() {
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/png");
+        share.putExtra(Intent.EXTRA_STREAM,
+                Uri.parse(getChartDirectory().toString() + getChartFileName()));
+        startActivity(Intent.createChooser(share, "Share Image"));
     }
 
     private void saveChartToFile() {
@@ -104,9 +139,13 @@ public class ReportActivity extends AppCompatActivity
 //                        getSupportFragmentManager().findFragmentById(R.id.chart_holder);
         View fragmentView = chartReportFragment.getView();
         // TODO: remove hardcoded filename
-        File outFile = new File(getChartDirectory() + "/chart1.png");
+        File outFile = new File(getChartDirectory() + getChartFileName());
         saveViewAsImage(fragmentView, outFile);
 
+    }
+
+    private String getChartFileName() {
+        return "/" + String.valueOf(new Date().getTime()) + ".png";
     }
 
 
@@ -123,7 +162,6 @@ public class ReportActivity extends AppCompatActivity
 
         FileOutputStream fos = null;
         try {
-            //TODO: remove hardcoded name
             fos = new FileOutputStream(outFile);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
@@ -160,6 +198,7 @@ public class ReportActivity extends AppCompatActivity
         if (file.mkdirs() == false) {
             Log.e(TAG, "Directory not created");
         }
+        Log.d(TAG, file.toString());
         return file;
     }
 

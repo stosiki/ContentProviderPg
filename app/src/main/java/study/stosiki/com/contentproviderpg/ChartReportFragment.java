@@ -1,29 +1,18 @@
 package study.stosiki.com.contentproviderpg;
 
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * Created by Edwin on 15/02/2015.
@@ -50,7 +39,7 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, ChartReportFragment.this);
 
         chartHolder = (ViewGroup)
-                getActivity().getLayoutInflater().inflate(R.layout.tab_1, container, false);
+                getActivity().getLayoutInflater().inflate(R.layout.chart_report_fragment, container, false);
         return chartHolder;
     }
 

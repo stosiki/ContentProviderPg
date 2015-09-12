@@ -58,7 +58,7 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
         };
 
         ViewGroup layout = (ViewGroup)getActivity().
-                getLayoutInflater().inflate(R.layout.activity_report, container, false);
+                getLayoutInflater().inflate(R.layout.plain_log_report_fragment, container, false);
         listView = (ListView)layout.findViewById(R.id.event_list);
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, this);
