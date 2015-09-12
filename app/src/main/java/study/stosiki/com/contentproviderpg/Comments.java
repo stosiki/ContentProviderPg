@@ -44,13 +44,17 @@ public class Comments {
 
 
     // TODOs
-    // - add tabs to the ReportActivity (EventList, Chart)
-    // - make it possible to select exactly 2 eventlines
+    // + add tabs to the ReportActivity (EventList, Chart)
+    // + make it possible to select exactly 2 eventlines
     // - if two eventlines are selected, both charts are present on the Chart tab
     //    and another 'Statistics' tab (currently not implemented) is added
     // EventNumeric and EventStringPropertyDialogFragments please use polymorphism, Bridge, Strategy
     //    or whatever but clean the mess
 
+    // + Undo Delete line doesn't really work
+    // - Add some indication that file was saved
+    // - In general, in ReportActivity add error handling and user notifications of
+    //   all IO operations (storage, dir creation, file writing, etc.)
     // - CSV export
     // - Value Markers
     // - different chart types together

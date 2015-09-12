@@ -63,7 +63,7 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, this);
 
-        return listView;
+        return layout;
     }
 
     /** LoaderManager.LoaderCallbacks methods **/

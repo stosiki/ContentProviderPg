@@ -240,15 +240,21 @@ public class MainActivity extends AppCompatActivity implements
         hideUndoAnimator = ObjectAnimator.ofFloat(
                 undoContainer, View.Y, viewY, viewY + undoContainer.getHeight());
         hideUndoAnimator.addListener(new AnimatorListenerAdapter() {
+            // this ugly flag is because onAnimationEnd is called either way
+            private boolean isCancelled = false;
+
             @Override
             public void onAnimationCancel(Animator animation) {
-                restoreUndoContainerState();
+                isCancelled = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
+//                animation.
                 restoreUndoContainerState();
-                deleteEventLine(selectedEventLinePositions.get(0));
+                if(isCancelled == false) {
+                    deleteEventLine(selectedEventLinePositions.get(0));
+                }
                 resetSelection();
             }
 
@@ -298,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onUndoClick(View controlView) {
         // stop undo animation - do it first, because it is undo animation listener
         // that ultimately affects the data structure
-        hideUndoAnimator.end();
+        hideUndoAnimator.cancel();
 
         // stop collapse animation
         listItemCollapseAnimation.cancel();

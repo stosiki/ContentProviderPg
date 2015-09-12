@@ -202,5 +202,4 @@ public class ReportActivity extends AppCompatActivity
         }
         return file;
     }
-
 }
