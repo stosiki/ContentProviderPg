@@ -13,12 +13,19 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * Created by mike on 7/26/2015.
  */
 public class CreateEventLineDialogFragment extends DialogFragment {
     private static final int DEFAULT_TYPE_POSITION = 0;
+
+    private static final int INPUT_OK = 0;
+    private static final int INPUT_EMPTY = 1;
+    private static final int INPUT_DUPLICATE_NAME = 2;
 
     public interface DialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
@@ -30,6 +37,9 @@ public class CreateEventLineDialogFragment extends DialogFragment {
 
     private ListView eventLineTypeSelector;
     private EditText eventLineTitleEntry;
+    private TextView errorMessage;
+
+    private ArrayList<String> lineNames;
 
     public CreateEventLineDialogFragment() {}
 
@@ -37,10 +47,12 @@ public class CreateEventLineDialogFragment extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         listener = (DialogListener)activity;
+
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        lineNames = getArguments().getStringArrayList("line_names");
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
         dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -71,20 +83,43 @@ public class CreateEventLineDialogFragment extends DialogFragment {
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(verifyInput()) {
-                        listener.onDialogPositiveClick(CreateEventLineDialogFragment.this);
-                        dialog.dismiss();
-                    } else {
-                        eventLineTitleEntry.setHintTextColor(
+                    switch (verifyInput()) {
+                        case INPUT_OK:
+                            listener.onDialogPositiveClick(CreateEventLineDialogFragment.this);
+                            dialog.dismiss();
+                            break;
+                        case INPUT_EMPTY:
+                            eventLineTitleEntry.setHintTextColor(
                                 getResources().getColor(android.R.color.holo_blue_bright));
+                            break;
+                        case INPUT_DUPLICATE_NAME:
+//                            errorMessage.setText(R.string.duplicate_eventline_name_error_msg);
+                            errorMessage.setVisibility(View.VISIBLE);
+                            break;
                     }
                 }
             });
         }
     }
 
-    private boolean verifyInput() {
-        return eventLineTitleEntry.getText().toString().isEmpty() == false;
+    private int verifyInput() {
+        String name = eventLineTitleEntry.getText().toString();
+        if(name.isEmpty()) {
+            return INPUT_EMPTY;
+        } else if(used(name)) {
+            return INPUT_DUPLICATE_NAME;
+        } else {
+            return INPUT_OK;
+        }
+    }
+
+    private boolean used(String name) {
+        for(String lineName : lineNames) {
+            if(lineName.equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -100,6 +135,7 @@ public class CreateEventLineDialogFragment extends DialogFragment {
         eventLineTypeSelector.setAdapter(eventTypesAdapter);
         setSelectedItem(DEFAULT_TYPE_POSITION);
         eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);
+        errorMessage = (TextView)view.findViewById(R.id.error_msg_text);
     }
 
     private void setSelectedItem(final int position) {

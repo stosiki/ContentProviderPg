@@ -52,9 +52,11 @@ public class Comments {
     //    or whatever but clean the mess
 
     // + Undo Delete line doesn't really work
-    // - Add some indication that file was saved
-    // - In general, in ReportActivity add error handling and user notifications of
+    // + Add some indication that file was saved
+    // + In general, in ReportActivity add error handling and user notifications of
     //   all IO operations (storage, dir creation, file writing, etc.)
+    // +~ Add input verification and error indications to all user input
+    //   (event line name - check for duplicates too), string input, number input
     // - CSV export
     // - Value Markers
     // - different chart types together
@@ -67,5 +69,6 @@ public class Comments {
     //
 
 
-
+// Also check out Google Analysis:
+    // https://support.google.com/docs/answer/6280499?p=explore_sheets&rd=1
 }

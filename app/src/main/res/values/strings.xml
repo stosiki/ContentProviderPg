@@ -3,4 +3,9 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="file_saved_success">File saved successfully</string>
+    <string name="external_storage_error">External storage is not available</string>
+    <string name="error_writing_to_file">Error writing to file</string>
+    <string name="duplicate_eventline_name">Event line with that name already exists</string>
+    <string name="duplicate_eventline_name_error_msg">Line with that name already exists</string>
 </resources>

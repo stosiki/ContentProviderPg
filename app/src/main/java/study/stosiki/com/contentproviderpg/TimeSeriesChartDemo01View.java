@@ -44,15 +44,18 @@ package study.stosiki.com.contentproviderpg;
  * 19-Nov-2010 : Version 0.0.1 (NM);
  */
 
+import org.afree.chart.axis.DateTick;
 import org.afree.chart.axis.NumberAxis;
 import org.afree.chart.axis.TickUnit;
 import org.afree.chart.axis.TickUnitSource;
+import org.afree.chart.axis.ValueTick;
 import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
 
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +75,7 @@ import org.afree.graphics.geom.OvalShape;
 import org.afree.graphics.geom.RectShape;
 import org.afree.graphics.geom.Shape;
 import org.afree.ui.RectangleInsets;
+import org.afree.ui.TextAnchor;
 import org.afree.util.ShapeUtilities;
 
 import android.content.Context;
@@ -160,12 +164,11 @@ public class TimeSeriesChartDemo01View extends DemoView {
         DateAxis axis = (DateAxis) plot.getDomainAxis();
 //        axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
 
+
         return chart;
     }
 
     /**
-     * Creates a dataset, consisting of two series of monthly data.
-     *
      * @return The dataset.
      */
     private static XYDataset createDataset(Cursor cursor) {
@@ -198,6 +201,10 @@ public class TimeSeriesChartDemo01View extends DemoView {
                     //TODO: subst hardcoded 1 for something meaningful, find a way to
                     // add string labels to the chart (is it a marker?)
                     series.add(new FixedMillisecond(timestamp), new Integer(1));
+/*
+                    series.add(new DateTick(new Date(timestamp), data.toString(),
+                            TextAnchor.BASELINE_CENTER, TextAnchor.CENTER, 90.0));
+*/
                 }
             } else {
                 series.add(new FixedMillisecond(timestamp), 0);

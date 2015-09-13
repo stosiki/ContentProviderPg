@@ -30,7 +30,7 @@
         android:id="@+id/undo_bar"
         android:orientation="horizontal"
         android:visibility="invisible"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:alpha="100"

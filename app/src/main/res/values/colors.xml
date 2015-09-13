@@ -10,5 +10,11 @@
     <color name="ColorPrimary">#00897B</color>
     <color name="ColorPrimaryDark">#00695C</color>
     <color name="tabsScrollColor">#004D40</color>
+    <color name="normal_message_bg">#ffeeffee</color>
+    <color name="normal_message_txt">#ff335591</color>
+    <color name="error_msg_bg">#ffffffff</color>
+    <color name="error_msg_text">#ffff0000</color>
+    <color name="warning_msg_bg">#ffffffff</color>
+    <color name="warning_msg_text">#ffee9900</color>
 
 </resources>

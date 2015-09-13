@@ -12,6 +12,14 @@
         android:hint="Event Line Title"
 
         />
+    <TextView
+        android:id="@+id/error_msg_text"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/error_msg_text"
+        android:text="@string/duplicate_eventline_name"
+        />
 
 
     <ListView

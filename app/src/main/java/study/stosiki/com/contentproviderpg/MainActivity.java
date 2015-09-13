@@ -188,8 +188,20 @@ public class MainActivity extends AppCompatActivity implements
 
     private void showAddEventLineDialog() {
         CreateEventLineDialogFragment createEventLineDialog = new CreateEventLineDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("line_names", lineNames());
+        createEventLineDialog.setArguments(bundle);
         FragmentManager fm = getFragmentManager();
         createEventLineDialog.show(fm, "createEventLine");
+    }
+
+    private ArrayList<String> lineNames() {
+        ArrayList<String> names = new ArrayList<>();
+        for(int i=0; i<listView.getChildCount(); i++) {
+            names.add(((TextView)listView.getChildAt(i).
+                    findViewById(R.id.line_title)).getText().toString());
+        }
+        return names;
     }
 
     private void showNumericPropertyDialog() {
