@@ -44,18 +44,17 @@ package study.stosiki.com.contentproviderpg;
  * 19-Nov-2010 : Version 0.0.1 (NM);
  */
 
-import org.afree.chart.axis.DateTick;
+import org.afree.chart.annotations.XYTextAnnotation;
 import org.afree.chart.axis.NumberAxis;
-import org.afree.chart.axis.TickUnit;
-import org.afree.chart.axis.TickUnitSource;
-import org.afree.chart.axis.ValueTick;
 import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
 
 
-import java.text.SimpleDateFormat;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,23 +64,26 @@ import org.afree.chart.axis.DateAxis;
 import org.afree.chart.plot.XYPlot;
 import org.afree.chart.renderer.xy.XYItemRenderer;
 import org.afree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.afree.data.time.Month;
 import org.afree.data.time.TimeSeries;
-import org.afree.data.time.TimeSeriesCollection;
-import org.afree.data.time.TimeSeriesDataItem;
 import org.afree.data.xy.XYDataset;
 import org.afree.graphics.SolidColor;
+import org.afree.graphics.geom.Font;
 import org.afree.graphics.geom.OvalShape;
 import org.afree.graphics.geom.RectShape;
 import org.afree.graphics.geom.Shape;
 import org.afree.ui.RectangleInsets;
 import org.afree.ui.TextAnchor;
-import org.afree.util.ShapeUtilities;
 
+import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.util.Log;
+import android.graphics.Typeface;
+
+import study.stosiki.com.contentproviderpg.events.EventLine;
+import study.stosiki.com.contentproviderpg.events.IntegerEvent;
+import study.stosiki.com.contentproviderpg.events.SimpleEvent;
+import study.stosiki.com.contentproviderpg.events.StringEvent;
 
 /**
  * TimeSeriesChartDemo01View
@@ -101,19 +103,12 @@ public class TimeSeriesChartDemo01View extends DemoView {
      */
     public TimeSeriesChartDemo01View(Context context, Cursor cursor) {
         super(context);
-
-        final AFreeChart chart = createChart(createDataset(cursor));
-
+        final AFreeChart chart = createChart(collectData(cursor));
         setChart(chart);
     }
 
-    /**
-     * Creates a chart.
-     *
-     * @param dataset a dataset.
-     * @return A chart.
-     */
-    private static AFreeChart createChart(XYDataset dataset) {
+    private static AFreeChart createChart(ArrayList<EventLine> data) {
+        TimeSeriesCollection dataset = new TimeSeriesCollection();
 
         AFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "",  // title
@@ -137,9 +132,6 @@ public class TimeSeriesChartDemo01View extends DemoView {
         plot.setDomainPannable(false);
         plot.setRangePannable(false);
         plot.getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-
-//        plot.setDomainCrosshairVisible(true);
-//        plot.setRangeCrosshairVisible(true);
 
         XYItemRenderer r = plot.getRenderer();
         //TODO: graphical properties of the charts have to be adjusted according to the dataset
@@ -165,58 +157,91 @@ public class TimeSeriesChartDemo01View extends DemoView {
 //        axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
 
 
+        // sort through data,
+        // if contains any LINE_TYPE_STRING series, extract it and convert to annotations
+        // else add it to the data set
+        for(EventLine eventLine : data) {
+            if(eventLine.getType() == EventLine.LINE_TYPE_STRING) {
+                for(SimpleEvent event : eventLine.getEvents()) {
+                    XYTextAnnotation annotation = new XYTextAnnotation(
+                            event.get
+                            String.valueOf(i) + "/09 00:00",
+//                    calendar.getTimeInMillis(),
+//                        new Date().getTime() - 1000 * 60 * 60 * 24 * (15-i),
+
+                            2
+                    );
+                    annotation.setFont(font);
+                    annotation.setTextAnchor(TextAnchor.BOTTOM_LEFT);
+                    annotation.setRotationAnchor(TextAnchor.BOTTOM_LEFT);
+                    plot.addAnnotation(annotation);
+                    annotation.setRotationAngle(Math.toRadians(-90));
+                }
+            } else {
+
+            }
+        }
+
+
+        /** test **/
+        Calendar calendar = new GregorianCalendar();
+        Font font = new Font("SansSerif", Typeface.BOLD, 36);
+
+
+
+        /** end test **/
+
+//        plot.setDomainCrosshairVisible(true);
+//        plot.setRangeCrosshairVisible(true);
+
+
+
         return chart;
     }
 
     /**
      * @return The dataset.
      */
-    private static XYDataset createDataset(Cursor cursor) {
-        Map<Integer, TimeSeries> dataSeries = new HashMap<Integer, TimeSeries>();
-        while (cursor.moveToNext()) {
-            /*
-                DbSchema.COL_ID,
-                DbSchema.COL_TIMESTAMP,
-                DbSchema.COL_LINE_ID,
-                DbSchema.COL_DATA,
-                DbSchema.COL_TITLE,
-                DbSchema.COL_LINE_TYPE
+    private Map<Integer, EventLine> collectData(Cursor cursor) {
+        //Map<Integer, EventLineTimeSeries> dataSeries = new HashMap<>();
+        Map<Integer, EventLine> data = new HashMap<>();
 
-             */
+        while (cursor.moveToNext()) {
             long timestamp = cursor.getLong(1);
             int lineId = cursor.getInt(2);
-            String data = cursor.getString(3);
+            // can be either number or string
+            String value = cursor.getString(3);
             String lineTitle = cursor.getString(4);
             int lineType = cursor.getInt(5);
 
-            if(dataSeries.containsKey(lineId) == false) {
-                TimeSeries series = new TimeSeries(lineTitle);
-                dataSeries.put(lineId, series);
+            if(data.containsKey(lineId) == false) {
+                EventLine eventLine = new EventLine(lineTitle, lineType);
+                data.put(lineId, eventLine);
             }
-            TimeSeries series = dataSeries.get(lineId);
-            if(data != null) {
-                if(lineType == MainActivity.LINE_TYPE_INTEGER) {
-                    series.add(new FixedMillisecond(timestamp), Integer.parseInt(data));
-                } else if(lineType == MainActivity.LINE_TYPE_STRING) {
-                    //TODO: subst hardcoded 1 for something meaningful, find a way to
-                    // add string labels to the chart (is it a marker?)
-                    series.add(new FixedMillisecond(timestamp), new Integer(1));
-/*
-                    series.add(new DateTick(new Date(timestamp), data.toString(),
-                            TextAnchor.BASELINE_CENTER, TextAnchor.CENTER, 90.0));
-*/
-                }
-            } else {
-                series.add(new FixedMillisecond(timestamp), 0);
+            EventLine eventLine = data.get(lineId);
+
+            switch(lineType) {
+                case EventLine.LINE_TYPE_SIMPLE:
+                    eventLine.addEvent(new SimpleEvent(timestamp));
+                    break;
+                case EventLine.LINE_TYPE_INTEGER:
+                    eventLine.addEvent(new IntegerEvent(timestamp, Integer.parseInt(value)));
+                    break;
+                case EventLine.LINE_TYPE_STRING:
+                    eventLine.addEvent(new StringEvent(timestamp, value));
+                    break;
             }
         }
 
-        TimeSeriesCollection dataset = new TimeSeriesCollection();
-        for(TimeSeries series : dataSeries.values()) {
-            dataset.addSeries(series);
-        }
+        return data;
+    }
 
-        return dataset;
+    class EventLineTimeSeries extends TimeSeries {
+        private int lineType;
+        EventLineTimeSeries(String title, int lineType) {
+            super(title);
+            this.lineType = lineType;
+        }
     }
 }
 

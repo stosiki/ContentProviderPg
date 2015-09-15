@@ -33,6 +33,8 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
+import study.stosiki.com.contentproviderpg.events.EventLine;
+
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -47,9 +49,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final long LIST_ITEM_COLLAPSE_ANIM_DURATION = 500;
     private static final long UNDO_BAR_HIDE_ANIM_DURATION = 1000;
-
-    public static final int LINE_TYPE_INTEGER = 1;
-    public static final int LINE_TYPE_STRING = 2;
 
     public static final int MAX_SELECTION_SIZE = 2;
 
@@ -351,10 +350,10 @@ public class MainActivity extends AppCompatActivity implements
         if(data != null) {
             if(data instanceof Integer) {
                 intent.putExtra(DbSchema.COL_DATA, ((Integer) data).intValue());
-                intent.putExtra(DbSchema.COL_LINE_TYPE, LINE_TYPE_INTEGER);
+                intent.putExtra(DbSchema.COL_LINE_TYPE, EventLine.LINE_TYPE_INTEGER);
             } else if(data instanceof String) {
                 intent.putExtra(DbSchema.COL_DATA, (String) data);
-                intent.putExtra(DbSchema.COL_LINE_TYPE, LINE_TYPE_STRING);
+                intent.putExtra(DbSchema.COL_LINE_TYPE, EventLine.LINE_TYPE_STRING);
             }
         }
         suspendInput();

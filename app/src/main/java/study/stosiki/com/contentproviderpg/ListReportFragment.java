@@ -69,19 +69,17 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
     /** LoaderManager.LoaderCallbacks methods **/
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] selectionArgs = null;
-        String selection = null;
-        if(lineIds.length == 1) {
-            selectionArgs = new String[1];
-            selection = "=?";
-            selectionArgs[0] = String.valueOf(lineIds[0]);
-        } else if(lineIds.length == 2) {
-            selectionArgs = new String[2];
-            selectionArgs[0] = String.valueOf(lineIds[0]);
-            selectionArgs[1] = String.valueOf(lineIds[1]);
-            selection = " in(?, ?)";
+        String[] selectionArgs = new String[lineIds.length];
+        for(int i=0; i<selectionArgs.length; i++) {
+            selectionArgs[i] = String.valueOf(lineIds[i]);
         }
 
+        String selection = null;
+        if(lineIds.length == 1) {
+            selection = "=?";
+        } else if(lineIds.length == 2) {
+            selection = " in(?, ?)";
+        }
 
         // get line id(s) from intent
         return new CursorLoader(
