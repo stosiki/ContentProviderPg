@@ -46,6 +46,7 @@ package study.stosiki.com.contentproviderpg;
 
 import org.afree.chart.annotations.XYTextAnnotation;
 import org.afree.chart.axis.NumberAxis;
+import org.afree.data.time.Day;
 import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
 
@@ -95,21 +96,16 @@ public class TimeSeriesChartDemo01View extends DemoView {
     private static final Shape CIRCLE_SHAPE = new OvalShape(-5, -5, 10, 10);
     private static final Shape SQUARE_SHAPE = new RectShape(-5, -5, 10, 10);
     private static final Shape[] NODE_SHAPES = new Shape[]{CIRCLE_SHAPE, SQUARE_SHAPE};
+    private static final Font ANNOTATION_FONT = new Font("SansSerif", Typeface.BOLD, 36);
 
-    /**
-     * constructor
-     *
-     * @param context
-     */
     public TimeSeriesChartDemo01View(Context context, Cursor cursor) {
         super(context);
         final AFreeChart chart = createChart(collectData(cursor));
         setChart(chart);
     }
 
-    private static AFreeChart createChart(ArrayList<EventLine> data) {
+    private static AFreeChart createChart(Map<Integer, EventLine> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-
         AFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "",  // title
                 "Date",             // x-axis label
@@ -160,42 +156,69 @@ public class TimeSeriesChartDemo01View extends DemoView {
         // sort through data,
         // if contains any LINE_TYPE_STRING series, extract it and convert to annotations
         // else add it to the data set
-        for(EventLine eventLine : data) {
+
+        // we need to traverse the data twice, because chartMinDomainValue, and chartMaxDomainValue,
+        // are required to create annotations and determine domain values for SimpleEvents
+        int chartMinDomainValue = 0;
+        int chartMaxDomainValue = 0;
+        int simpleLinesCount = 0;
+        for(EventLine eventLine : data.values()) {
+            if(eventLine.getType() == EventLine.LINE_TYPE_INTEGER) {
+                TimeSeries series = new TimeSeries(eventLine.getTitle());
+                Map<Day, Integer> seriesData = new HashMap<>();
+                for(SimpleEvent event : eventLine.getEvents()) {
+                    int value = ((IntegerEvent)event).getValue();
+                    if(chartMinDomainValue == 0 || chartMinDomainValue > value) {
+                        chartMinDomainValue = value;
+                    }
+                    if(chartMaxDomainValue < value) {
+                        chartMaxDomainValue = value;
+                    }
+                    long timestamp = event.getTimestamp();
+                    if(eventLine.isAggregatedDaily()) {
+                        Day d = new Day(new Date(timestamp));
+                        if (seriesData.containsKey(d) == false) {
+                            seriesData.put(d, 0);
+                        }
+                        seriesData.put(d, seriesData.get(d).intValue() + value);
+                    } else {
+                        series.add(new FixedMillisecond(timestamp), value);
+                    }
+                }
+                if(eventLine.isAggregatedDaily()) {
+                    for (Day day : seriesData.keySet()) {
+                        series.add(day, seriesData.get(day));
+                    }
+                }
+                dataset.addSeries(series);
+            } else if(eventLine.getType() == EventLine.LINE_TYPE_SIMPLE) {
+                simpleLinesCount++;
+            }
+        }
+
+        // collect and aggregate Simple events
+        // we need to do it in a separate pass because domain range determining positions
+        for(EventLine eventLine : data.values()) {
+        }
+
+        for(EventLine eventLine : data.values()) {
             if(eventLine.getType() == EventLine.LINE_TYPE_STRING) {
                 for(SimpleEvent event : eventLine.getEvents()) {
                     XYTextAnnotation annotation = new XYTextAnnotation(
-                            event.get
-                            String.valueOf(i) + "/09 00:00",
-//                    calendar.getTimeInMillis(),
-//                        new Date().getTime() - 1000 * 60 * 60 * 24 * (15-i),
-
-                            2
+                            ((StringEvent)event).getComment(),
+                            event.getTimestamp(),
+                            chartMinDomainValue
                     );
-                    annotation.setFont(font);
+                    annotation.setFont(ANNOTATION_FONT);
                     annotation.setTextAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAnchor(TextAnchor.BOTTOM_LEFT);
                     plot.addAnnotation(annotation);
                     annotation.setRotationAngle(Math.toRadians(-90));
                 }
-            } else {
-
             }
         }
 
-
-        /** test **/
-        Calendar calendar = new GregorianCalendar();
-        Font font = new Font("SansSerif", Typeface.BOLD, 36);
-
-
-
-        /** end test **/
-
-//        plot.setDomainCrosshairVisible(true);
-//        plot.setRangeCrosshairVisible(true);
-
-
-
+//        chart.setTitle("something something");
         return chart;
     }
 
@@ -215,7 +238,8 @@ public class TimeSeriesChartDemo01View extends DemoView {
             int lineType = cursor.getInt(5);
 
             if(data.containsKey(lineId) == false) {
-                EventLine eventLine = new EventLine(lineTitle, lineType);
+                //TODO: "true" in the constructor is hardcoded, it should be
+                EventLine eventLine = new EventLine(lineTitle, lineType, true);
                 data.put(lineId, eventLine);
             }
             EventLine eventLine = data.get(lineId);

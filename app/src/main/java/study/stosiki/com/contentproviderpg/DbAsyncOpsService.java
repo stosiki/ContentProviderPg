@@ -10,6 +10,8 @@ import android.provider.BaseColumns;
 
 import java.util.Date;
 
+import study.stosiki.com.contentproviderpg.events.EventLine;
+
 /**
  * Created by mike on 7/23/2015.
  */
@@ -52,11 +54,11 @@ public class DbAsyncOpsService extends IntentService {
             values.put(DbSchema.COL_TIMESTAMP, new Date().getTime());
             int lineType = intent.getIntExtra(DbSchema.COL_LINE_TYPE, -1);
             switch (lineType) {
-                case MainActivity.LINE_TYPE_INTEGER:
+                case EventLine.LINE_TYPE_INTEGER:
                     Integer intData = intent.getIntExtra(DbSchema.COL_DATA, -1);
                     values.put(DbSchema.COL_DATA, intData);
                     break;
-                case MainActivity.LINE_TYPE_STRING:
+                case EventLine.LINE_TYPE_STRING:
                     String stringData = intent.getStringExtra(DbSchema.COL_DATA);
                     values.put(DbSchema.COL_DATA, stringData);
                     break;

@@ -13,12 +13,14 @@ public class EventLine {
 
     private String title;
     private int type;
-    private ArrayList<SimpleEvent> events;
+    private ArrayList events;
+    private boolean aggregatedDaily;
 
-    public EventLine(String title, int type) {
+    public EventLine(String title, int type, boolean aggregatedDaily) {
         this.title = title;
         this.type = type;
-        this.events = new ArrayList<SimpleEvent>();
+        this.aggregatedDaily = aggregatedDaily;
+        this.events = new ArrayList();
     }
 
     public void addEvent(SimpleEvent event) {
@@ -35,5 +37,9 @@ public class EventLine {
 
     public ArrayList<SimpleEvent> getEvents() {
         return events;
+    }
+
+    public boolean isAggregatedDaily() {
+        return aggregatedDaily;
     }
 }

@@ -71,4 +71,11 @@ public class Comments {
 
 // Also check out Google Analysis:
     // https://support.google.com/docs/answer/6280499?p=explore_sheets&rd=1
+
+    // simple, simple
+    // simple, string
+    // string, string
+    // integer, integer
+    // integer, simple
+    // integer, string
 }

@@ -9,4 +9,8 @@ public class IntegerEvent extends SimpleEvent {
         super(timestamp);
         this.value = value;
     }
+
+    public int getValue() {
+        return value;
+    }
 }
