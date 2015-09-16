@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class CreateEventLineDialogFragment extends DialogFragment {
     private ListView eventLineTypeSelector;
     private EditText eventLineTitleEntry;
     private TextView errorMessage;
+    private CheckBox aggregateDailyCheck;
 
     private ArrayList<String> lineNames;
 

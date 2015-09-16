@@ -1,4 +1,4 @@
-package study.stosiki.com.contentproviderpg;
+package study.stosiki.com.contentproviderpg.db;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -95,7 +95,9 @@ public class EventLinesContract {
                 DbSchema.COL_LINE_ID,
                 DbSchema.COL_DATA,
                 DbSchema.COL_TITLE,
-                DbSchema.COL_LINE_TYPE
+                DbSchema.COL_LINE_TYPE,
+                DbSchema.COL_COLOR,
+                DbSchema.COL_AGGREGATE
         };
     }
 }

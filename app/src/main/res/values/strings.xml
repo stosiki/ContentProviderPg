@@ -8,4 +8,5 @@
     <string name="error_writing_to_file">Error writing to file</string>
     <string name="duplicate_eventline_name">Event line with that name already exists</string>
     <string name="duplicate_eventline_name_error_msg">Line with that name already exists</string>
+    <string name="aggregate_daily_check">Aggregate on Daily Basis</string>
 </resources>

@@ -3,7 +3,7 @@
  * It intentionally doesn't support batch mode
  *
  */
-package study.stosiki.com.contentproviderpg;
+package study.stosiki.com.contentproviderpg.db;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -14,6 +14,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
+
+import study.stosiki.com.contentproviderpg.MainActivity;
 
 
 public class EventLinesContentProvider extends ContentProvider {

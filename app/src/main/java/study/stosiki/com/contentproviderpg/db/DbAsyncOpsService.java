@@ -1,7 +1,6 @@
-package study.stosiki.com.contentproviderpg;
+package study.stosiki.com.contentproviderpg.db;
 
 import android.app.IntentService;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;

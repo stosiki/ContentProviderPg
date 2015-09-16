@@ -33,4 +33,5 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:22.0.0'
     compile 'com.android.support:recyclerview-v7:22.0.0'
     compile files('libs/afreechart-0.0.4.jar')
+    compile(group: 'com.ribell', name: 'colorpickerview', version: '1.0.1', ext: 'aar')
 }

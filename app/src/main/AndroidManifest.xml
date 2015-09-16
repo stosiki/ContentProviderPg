@@ -22,14 +22,14 @@
         <activity android:name=".ReportActivity"/>
 
         <provider
-            android:name=".EventLinesContentProvider"
+            android:name=".db.EventLinesContentProvider"
             android:authorities="com.stosiki.eventlines"
             android:enabled="true"
             android:exported="false" >
         </provider>
 
         <service
-            android:name=".DbAsyncOpsService"
+            android:name=".db.DbAsyncOpsService"
             android:exported="false"
             />
     </application>

@@ -21,11 +21,34 @@
         android:text="@string/duplicate_eventline_name"
         />
 
-
     <ListView
         android:id="@+id/event_line_type_selector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
 
+    <CheckBox
+        android:id="@+id/aggregate_daily_check"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/aggregate_daily_check"
+        />
+
+    <com.ribell.colorpickerview.ColorPickerView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/line_color_picker"
+        android:layout_margin="@dimen/spacing_xlarge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnWidth="90dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        android:layout_gravity="center"
+        custom:borderColorSelected="@color/accent"
+        custom:borderColor="@color/grey_60alpha"
+        android:entries="@array/rainbow"
+        />
 </LinearLayout>

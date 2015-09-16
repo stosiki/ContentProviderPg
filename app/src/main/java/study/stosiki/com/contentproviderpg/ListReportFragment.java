@@ -19,6 +19,9 @@ import android.widget.TextView;
 
 import java.util.Date;
 
+import study.stosiki.com.contentproviderpg.db.DbSchema;
+import study.stosiki.com.contentproviderpg.db.EventLinesContract;
+
 /**
  * Created by Edwin on 15/02/2015.
  */

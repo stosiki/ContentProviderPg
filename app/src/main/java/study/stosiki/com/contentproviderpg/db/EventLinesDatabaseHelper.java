@@ -1,17 +1,18 @@
-package study.stosiki.com.contentproviderpg;
+package study.stosiki.com.contentproviderpg.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
+
+import study.stosiki.com.contentproviderpg.db.DbSchema;
 
 /**
  * Created by User on 20/07/2015.
  */
 public class EventLinesDatabaseHelper extends SQLiteOpenHelper implements DbSchema {
     private static final SQLiteDatabase.CursorFactory DEFAULT_CURSOR_FACTORY = null;
-    private static final String DB_FILE_NAME = "some.db";
-    private static final int DB_VERSION = 9;
+    private static final String DB_FILE_NAME = "event_lines.db";
+    private static final int DB_VERSION = 10;
 
     public EventLinesDatabaseHelper(Context context) {
         super(context, DB_FILE_NAME, DEFAULT_CURSOR_FACTORY, DB_VERSION);
@@ -29,19 +30,26 @@ public class EventLinesDatabaseHelper extends SQLiteOpenHelper implements DbSche
     }
 
     private void fakeData(SQLiteDatabase db) {
-        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
-               "VALUES(1, 1, \"Smiles\");");
-        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
-               "VALUES(2, 1, \"Nice Girls\");");
-        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
-               "VALUES(3, 1, \"Single-speeds\");");
-        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
-               "VALUES(4, 1, \"Cups of tea\");");
-        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
-               "VALUES(5, 1, \"White cars\");");
-        db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title) "+
-               "VALUES(6, 1, \"New Kid\");");
+        String[] names = new String[]{
+                "Smiles", "Nice Girls", "SingleSpeeds", "Cups of Tea", "White Cars", "New Kid"
+        };
 
+        String[] colors = new String[]{
+                "#d32f2f", "#c2185b", "#7b1fa2", "#d50000", "#c51162", "#aa00ff",
+                "#512da8", "#303f9f", "#1976d2", "#6200ea"
+        };
+
+        for(int i=0; i<names.length; i++) {
+            db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title, color, aggregate) " +
+                    "VALUES(" +
+                    String.valueOf(i+1) + ", " +
+                    "1, " +
+                    "\'" + names[i] + "\', " +
+                    "\'" + colors[i] + "\', " +
+                    String.valueOf(1) +
+                    ");");
+
+        }
     }
 
     @Override

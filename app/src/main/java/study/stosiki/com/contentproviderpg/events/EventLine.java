@@ -10,16 +10,21 @@ public class EventLine {
     public static final int LINE_TYPE_INTEGER = 1;
     public static final int LINE_TYPE_STRING = 2;
 
+    public static final int AGGREGATE_NONE = 0;
+    public static final int AGGREGATE_DAILY = 1;
+
 
     private String title;
     private int type;
     private ArrayList events;
-    private boolean aggregatedDaily;
+    private int aggregate;
+    private String color;
 
-    public EventLine(String title, int type, boolean aggregatedDaily) {
+    public EventLine(String title, int type, String color, int aggregate) {
         this.title = title;
         this.type = type;
-        this.aggregatedDaily = aggregatedDaily;
+        this.aggregate = aggregate;
+        this.color = color;
         this.events = new ArrayList();
     }
 
@@ -39,7 +44,11 @@ public class EventLine {
         return events;
     }
 
-    public boolean isAggregatedDaily() {
-        return aggregatedDaily;
+    public int getAggregate() {
+        return aggregate;
+    }
+
+    public String getColor() {
+        return color;
     }
 }

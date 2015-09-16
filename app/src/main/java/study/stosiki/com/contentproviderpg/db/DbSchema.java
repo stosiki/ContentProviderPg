@@ -1,4 +1,4 @@
-package study.stosiki.com.contentproviderpg;
+package study.stosiki.com.contentproviderpg.db;
 
 import android.provider.BaseColumns;
 
@@ -24,6 +24,8 @@ public interface DbSchema {
     /* table event lines */
     String COL_LINE_TYPE = "linetype";
     String COL_TITLE = "title";
+    String COL_COLOR = "color";
+    String COL_AGGREGATE = "aggregate";
 
     /* view event line list item */
     String COL_EVENT_COUNT = "event_count";
@@ -34,8 +36,8 @@ public interface DbSchema {
             // data text, line_id integer not null, foreign key(line_id) references event_lines(_id) on
             // delete cascade
     String DDL_CREATE_TBL_EVENTS =
-            "CREATE TABLE " + TBL_EVENTS + " " +
-            "(" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "CREATE TABLE " + TBL_EVENTS + " (" +
+            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_TIMESTAMP + " INTEGER NOT NULL, " +
             COL_DATA + " TEXT, " +
             COL_LINE_ID + " INTEGER NOT NULL, " +
@@ -45,10 +47,14 @@ public interface DbSchema {
             // create table event_lines (_id integer primary key autoincrement, line_type integer not null,
             // col_title text not null);
     String DDL_CREATE_TBL_EVENT_LINES =
-            "CREATE TABLE " + TBL_EVENT_LINES + " " +
-            "(" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "CREATE TABLE " + TBL_EVENT_LINES + " (" +
+            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_LINE_TYPE + " INTEGER NOT NULL, " +
-            COL_TITLE + " TEXT NOT NULL);";
+            COL_TITLE + " TEXT NOT NULL, " +
+            COL_COLOR + " TEXT NOT NULL, " +
+            COL_AGGREGATE + " INTEGER NOT NULL" +
+            ");";
+
 
     String DDL_CREATE_VIEW_EVENT_LINE_LIST_ITEMS =
             //create view event_line_list_items as select event_lines._id, event_lines.line_title,
@@ -76,7 +82,9 @@ public interface DbSchema {
                     TBL_EVENTS + "." + COL_LINE_ID + ", " +
                     TBL_EVENTS + "." + COL_DATA + ", " +
                     TBL_EVENT_LINES + "." + COL_TITLE + ", " +
-                    TBL_EVENT_LINES + "." + COL_LINE_TYPE +
+                    TBL_EVENT_LINES + "." + COL_LINE_TYPE + ", " +
+                    TBL_EVENT_LINES + "." + COL_COLOR + ", " +
+                    TBL_EVENT_LINES + "." + COL_AGGREGATE +
                     " FROM " +
                     TBL_EVENTS + " LEFT OUTER JOIN " +
                     TBL_EVENT_LINES + " ON " + TBL_EVENT_LINES + "." +  COL_ID + "=" +

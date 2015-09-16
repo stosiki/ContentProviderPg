@@ -16,9 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +31,9 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
+import study.stosiki.com.contentproviderpg.db.DbAsyncOpsService;
+import study.stosiki.com.contentproviderpg.db.DbSchema;
+import study.stosiki.com.contentproviderpg.db.EventLinesContract;
 import study.stosiki.com.contentproviderpg.events.EventLine;
 
 

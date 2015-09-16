@@ -1,4 +1,4 @@
-package study.stosiki.com.contentproviderpg;
+package study.stosiki.com.contentproviderpg.charts;
 
 /**
  * Created by User on 27/08/2015.
@@ -51,11 +51,7 @@ import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
 
 
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +62,6 @@ import org.afree.chart.plot.XYPlot;
 import org.afree.chart.renderer.xy.XYItemRenderer;
 import org.afree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.afree.data.time.TimeSeries;
-import org.afree.data.xy.XYDataset;
 import org.afree.graphics.SolidColor;
 import org.afree.graphics.geom.Font;
 import org.afree.graphics.geom.OvalShape;
@@ -75,12 +70,12 @@ import org.afree.graphics.geom.Shape;
 import org.afree.ui.RectangleInsets;
 import org.afree.ui.TextAnchor;
 
-import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
+import study.stosiki.com.contentproviderpg.MainActivity;
 import study.stosiki.com.contentproviderpg.events.EventLine;
 import study.stosiki.com.contentproviderpg.events.IntegerEvent;
 import study.stosiki.com.contentproviderpg.events.SimpleEvent;
@@ -137,7 +132,7 @@ public class TimeSeriesChartDemo01View extends DemoView {
             renderer.setBaseShapesFilled(true);
 //            Shape cross = ShapeUtilities..createDiagonalCross(3, 1);
             renderer.setBaseShape(CIRCLE_SHAPE);
-            for(int i=0; i<MainActivity.MAX_SELECTION_SIZE; i++) {
+            for(int i=0; i< MainActivity.MAX_SELECTION_SIZE; i++) {
                 renderer.setSeriesShape(i, NODE_SHAPES[i]);
                 renderer.setSeriesShapesFilled(i, true);
                 renderer.setSeriesShapesVisible(i, true);
@@ -175,7 +170,7 @@ public class TimeSeriesChartDemo01View extends DemoView {
                         chartMaxDomainValue = value;
                     }
                     long timestamp = event.getTimestamp();
-                    if(eventLine.isAggregatedDaily()) {
+                    if(eventLine.getAggregate() == EventLine.AGGREGATE_DAILY) {
                         Day d = new Day(new Date(timestamp));
                         if (seriesData.containsKey(d) == false) {
                             seriesData.put(d, 0);
@@ -185,7 +180,7 @@ public class TimeSeriesChartDemo01View extends DemoView {
                         series.add(new FixedMillisecond(timestamp), value);
                     }
                 }
-                if(eventLine.isAggregatedDaily()) {
+                if(eventLine.getAggregate() == EventLine.AGGREGATE_DAILY) {
                     for (Day day : seriesData.keySet()) {
                         series.add(day, seriesData.get(day));
                     }
@@ -236,10 +231,12 @@ public class TimeSeriesChartDemo01View extends DemoView {
             String value = cursor.getString(3);
             String lineTitle = cursor.getString(4);
             int lineType = cursor.getInt(5);
+            String color = cursor.getString(6);
+            int aggregate = cursor.getInt(7);
 
             if(data.containsKey(lineId) == false) {
                 //TODO: "true" in the constructor is hardcoded, it should be
-                EventLine eventLine = new EventLine(lineTitle, lineType, true);
+                EventLine eventLine = new EventLine(lineTitle, lineType, color, aggregate);
                 data.put(lineId, eventLine);
             }
             EventLine eventLine = data.get(lineId);

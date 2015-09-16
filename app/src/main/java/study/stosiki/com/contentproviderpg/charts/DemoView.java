@@ -1,4 +1,4 @@
-package study.stosiki.com.contentproviderpg;
+package study.stosiki.com.contentproviderpg.charts;
 
 /**
  * Created by User on 27/08/2015.
