@@ -5,9 +5,14 @@ package study.stosiki.com.contentproviderpg.color_picker;
  */
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -48,8 +53,9 @@ public class ColorImageView extends ImageView {
         mBorderColor = getResources().getColor(R.color.border);
         mBorderColorSelected = getResources().getColor(R.color.border_selected);
         mColor = getResources().getColor(R.color.circle);
-        setBackground(getResources().getDrawable(R.drawable.circle_border));
-        setImageDrawable(getResources().getDrawable(R.drawable.circle));
+//        setBackground(getResources().getDrawable(R.drawable.circle_border));
+//        BitmapDrawable bitmapDrawable = new BitmapDrawable()
+        setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.circle));
     }
 
     public void setBackgroundColor(int color) {
@@ -67,19 +73,40 @@ public class ColorImageView extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Drawable drawableBackground = getResources().getDrawable(R.drawable.circle);
+
+
+        Drawable drawableBackground = ContextCompat.getDrawable(getContext(), R.drawable.circle);
         drawableBackground = DrawableCompat.wrap(drawableBackground);
         drawableBackground.mutate().setColorFilter(mColor, PorterDuff.Mode.SRC_IN);
 
-        setImageDrawable(drawableBackground);
+//        setImageDrawable(drawableBackground);
 
-        Drawable drawableBorder = getResources().getDrawable(R.drawable.circle_border);
+        Drawable drawableBorder = ContextCompat.getDrawable(getContext(), R.drawable.circle_border);
         drawableBorder = DrawableCompat.wrap(drawableBorder);
         int borderColor = mBorderColor;
-        if(isSelected()){
+        if(!isSelected()){
             borderColor = mBorderColorSelected;
         }
         drawableBorder.mutate().setColorFilter(borderColor, PorterDuff.Mode.SRC_IN);
-        setBackground(drawableBorder);
+
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{drawableBorder, drawableBackground});
+        setImageDrawable(layerDrawable);
+//        setBackground(drawableBorder);
+
+/*
+        Bitmap circleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.circle);
+        Bitmap circleBorderBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.circle_border);
+
+        Bitmap bitmap = Bitmap.createBitmap(circleBitmap.getWidth(), circleBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+        canvas.drawBitmap(circleBitmap, 0, 0, null);
+        canvas.drawBitmap(circleBorderBitmap, 0, 0, null);
+
+        Bitmap result = Bitmap.createBitmap(firstImage.getWidth(), firstImage.getHeight(), firstImage.getConfig());
+Canvas canvas = new Canvas(result);
+canvas.drawBitmap(firstImage, 0f, 0f, null);
+canvas.drawBitmap(secondImage, 10, 10, null);
+return result;
+*/
     }
 }

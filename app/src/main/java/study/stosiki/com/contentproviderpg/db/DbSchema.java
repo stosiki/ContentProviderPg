@@ -51,7 +51,7 @@ public interface DbSchema {
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_LINE_TYPE + " INTEGER NOT NULL, " +
             COL_TITLE + " TEXT NOT NULL, " +
-            COL_COLOR + " INTEGER, " +
+            COL_COLOR + " INTEGER NOT NULL, " +
             COL_AGGREGATE + " INTEGER NOT NULL" +
             ");";
 
