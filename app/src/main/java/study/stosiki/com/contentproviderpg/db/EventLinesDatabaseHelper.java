@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import study.stosiki.com.contentproviderpg.R;
 import study.stosiki.com.contentproviderpg.db.DbSchema;
 
 /**
@@ -12,7 +13,7 @@ import study.stosiki.com.contentproviderpg.db.DbSchema;
 public class EventLinesDatabaseHelper extends SQLiteOpenHelper implements DbSchema {
     private static final SQLiteDatabase.CursorFactory DEFAULT_CURSOR_FACTORY = null;
     private static final String DB_FILE_NAME = "event_lines.db";
-    private static final int DB_VERSION = 10;
+    private static final int DB_VERSION = 15;
 
     public EventLinesDatabaseHelper(Context context) {
         super(context, DB_FILE_NAME, DEFAULT_CURSOR_FACTORY, DB_VERSION);
@@ -34,20 +35,22 @@ public class EventLinesDatabaseHelper extends SQLiteOpenHelper implements DbSche
                 "Smiles", "Nice Girls", "SingleSpeeds", "Cups of Tea", "White Cars", "New Kid"
         };
 
-        String[] colors = new String[]{
-                "#d32f2f", "#c2185b", "#7b1fa2", "#d50000", "#c51162", "#aa00ff",
-                "#512da8", "#303f9f", "#1976d2", "#6200ea"
+        int[] aggregates = new int[]{1, 1, 1, 1, 0, 0};
+
+        int[] colors = new int[]{
+                R.color.blue_500, R.color.lime_500, R.color.orange_500, R.color.brown_500, R.color.red_500,
+                R.color.teal_500, R.color.material_deep_teal_500
         };
 
         for(int i=0; i<names.length; i++) {
             db.execSQL("INSERT INTO EVENT_LINES(_id, linetype, title, color, aggregate) " +
                     "VALUES(" +
-                    String.valueOf(i+1) + ", " +
-                    "1, " +
+                    String.valueOf(i+1)
+                    + ", " + "1, " +
                     "\'" + names[i] + "\', " +
                     "\'" + colors[i] + "\', " +
-                    String.valueOf(1) +
-                    ");");
+                    "\'" + aggregates[i] + "\'"
+                    + ");");
 
         }
     }

@@ -70,9 +70,14 @@ public class DbAsyncOpsService extends IntentService {
     private void onActionCreateEventLine(Intent intent) {
         int lineType = intent.getIntExtra(DbSchema.COL_LINE_TYPE, -1);
         String lineTitle = intent.getStringExtra(DbSchema.COL_TITLE);
+        int aggreate = intent.getIntExtra(DbSchema.COL_AGGREGATE, -1);
+        int color = intent.getIntExtra(DbSchema.COL_COLOR, -1);
         ContentValues values = new ContentValues();
         values.put(DbSchema.COL_LINE_TYPE, lineType);
         values.put(DbSchema.COL_TITLE, lineTitle);
+        values.put(DbSchema.COL_AGGREGATE, aggreate);
+        values.put(DbSchema.COL_COLOR, color);
+
         getContentResolver().insert(EventLinesContract.EventLines.CONTENT_URI, values);
     }
 

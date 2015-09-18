@@ -18,15 +18,19 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import study.stosiki.com.contentproviderpg.color_picker.ColorPickerView;
+import study.stosiki.com.contentproviderpg.color_picker.ColorPickerViewListener;
+
 /**
  * Created by mike on 7/26/2015.
  */
-public class CreateEventLineDialogFragment extends DialogFragment {
+public class CreateEventLineDialogFragment extends DialogFragment implements ColorPickerViewListener {
     private static final int DEFAULT_TYPE_POSITION = 0;
 
     private static final int INPUT_OK = 0;
     private static final int INPUT_EMPTY = 1;
     private static final int INPUT_DUPLICATE_NAME = 2;
+
 
     public interface DialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
@@ -40,6 +44,9 @@ public class CreateEventLineDialogFragment extends DialogFragment {
     private EditText eventLineTitleEntry;
     private TextView errorMessage;
     private CheckBox aggregateDailyCheck;
+    private ColorPickerView colorPicker;
+
+    private int selectedColor;
 
     private ArrayList<String> lineNames;
 
@@ -138,6 +145,17 @@ public class CreateEventLineDialogFragment extends DialogFragment {
         setSelectedItem(DEFAULT_TYPE_POSITION);
         eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);
         errorMessage = (TextView)view.findViewById(R.id.error_msg_text);
+
+        aggregateDailyCheck = (CheckBox)view.findViewById(R.id.aggregate_daily_check);
+
+        colorPicker = (ColorPickerView)view.findViewById(R.id.line_color_picker);
+        colorPicker.setListener(this);
+    }
+
+    @Override
+    public void onColorPickerClick(int colorPosition) {
+        selectedColor = colorPicker.getColor(colorPosition);
+//        Log.d(TAG, "TEST color: "+colorPosition);
     }
 
     private void setSelectedItem(final int position) {
@@ -150,5 +168,13 @@ public class CreateEventLineDialogFragment extends DialogFragment {
 
     public String getTitle() {
         return eventLineTitleEntry.getText().toString();
+    }
+
+    public int getAggregate() {
+        return aggregateDailyCheck.isChecked()? 1 : 0;
+    }
+
+    public int getSelectedColor() {
+        return selectedColor;
     }
 }

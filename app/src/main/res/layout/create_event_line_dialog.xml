@@ -34,7 +34,7 @@
         android:text="@string/aggregate_daily_check"
         />
 
-    <com.ribell.colorpickerview.ColorPickerView
+    <study.stosiki.com.contentproviderpg.color_picker.ColorPickerView
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/line_color_picker"
         android:layout_margin="@dimen/spacing_xlarge"
@@ -49,6 +49,5 @@
         android:layout_gravity="center"
         custom:borderColorSelected="@color/accent"
         custom:borderColor="@color/grey_60alpha"
-        android:entries="@array/rainbow"
         />
 </LinearLayout>

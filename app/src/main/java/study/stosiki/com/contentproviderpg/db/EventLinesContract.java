@@ -75,7 +75,9 @@ public class EventLinesContract {
                 DbSchema.COL_ID,
                 DbSchema.COL_TITLE,
                 DbSchema.COL_EVENT_COUNT,
-                DbSchema.COL_LINE_TYPE
+                DbSchema.COL_LINE_TYPE,
+                DbSchema.COL_AGGREGATE,
+                DbSchema.COL_COLOR
         };
     }
 

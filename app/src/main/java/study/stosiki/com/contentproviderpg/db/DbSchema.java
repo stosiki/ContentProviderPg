@@ -51,7 +51,7 @@ public interface DbSchema {
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_LINE_TYPE + " INTEGER NOT NULL, " +
             COL_TITLE + " TEXT NOT NULL, " +
-            COL_COLOR + " TEXT NOT NULL, " +
+            COL_COLOR + " INTEGER, " +
             COL_AGGREGATE + " INTEGER NOT NULL" +
             ");";
 
@@ -62,10 +62,11 @@ public interface DbSchema {
             //left outer join events on event_lines._id=events.line_id group by event_lines._id;
             "CREATE VIEW " + VIEW_LINE_LIST_ITEMS + " AS SELECT " +
                     TBL_EVENT_LINES + "." + COL_ID + ", " +
-                    TBL_EVENT_LINES + "." + COL_TITLE + ", "
-                    + TBL_EVENT_LINES + "." + COL_LINE_TYPE +
-                    ", COUNT(" + TBL_EVENTS + "." + COL_LINE_ID +
-                    ") AS " + COL_EVENT_COUNT +
+                    TBL_EVENT_LINES + "." + COL_TITLE + ", " +
+                    TBL_EVENT_LINES + "." + COL_LINE_TYPE + ", " +
+                    TBL_EVENT_LINES + "." + COL_AGGREGATE + ", " +
+                    TBL_EVENT_LINES + "." + COL_COLOR + ", " +
+                    "COUNT(" + TBL_EVENTS + "." + COL_LINE_ID + ") AS " + COL_EVENT_COUNT +
                     " FROM " + TBL_EVENT_LINES + " LEFT OUTER JOIN " +
                     TBL_EVENTS + " ON " + TBL_EVENT_LINES + "." + COL_ID + "=" +
                     TBL_EVENTS + "." + COL_LINE_ID +
@@ -103,7 +104,8 @@ public interface DbSchema {
     String DDL_DROP_CHART_REPORT_VIEW =
             "DROP VIEW IF EXISTS " + VIEW_CHART_REPORT;
 
-    String DML_LINE_TITLE_AND_COUNT = "SELECT COUNT(*), " + TBL_EVENT_LINES + "." + COL_TITLE +
+    String DML_LINE_TITLE_AND_COUNT =
+            "SELECT COUNT(*), " + TBL_EVENT_LINES + "." + COL_TITLE +
             " FROM " + TBL_EVENTS + " LEFT OUTER JOIN " + TBL_EVENT_LINES + " ON " +
             TBL_EVENTS + "." + COL_LINE_ID + "=" + TBL_EVENT_LINES + "." + COL_ID +
             " WHERE " + TBL_EVENT_LINES + "." + COL_ID + "=";

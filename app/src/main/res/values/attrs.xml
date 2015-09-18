@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ColorPickerView">
+        <attr name="borderColor" format="integer" />
+        <attr name="borderColorSelected" format="integer" />
+        <attr name="circleSize" format="dimension" />
+        <attr name="android:entries" />
+    </declare-styleable>
+
+    <declare-styleable name="ColorPickerImageView">
+        <attr name="imageBorderColor" format="integer" />
+        <attr name="imageBorderColorSelected" format="integer" />
+        <attr name="imageBackgroundColor" format="integer"/>
+    </declare-styleable>
+</resources>

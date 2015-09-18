@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -13,9 +14,11 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +33,7 @@ import android.widget.TextView;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import study.stosiki.com.contentproviderpg.db.DbAsyncOpsService;
 import study.stosiki.com.contentproviderpg.db.DbSchema;
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public static MainThreadBus eventBus = new MainThreadBus();
 
-    private SimpleCursorAdapter cursorAdapter;
+    private CursorAdapter cursorAdapter;
     private int eventLinePositionToAddEventTo;
     private ArrayList<Integer> selectedEventLinePositions;
 //    private ActionMode actionMode;
@@ -91,22 +95,41 @@ public class MainActivity extends AppCompatActivity implements
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
-        cursorAdapter = new SimpleCursorAdapter(
+        cursorAdapter = new CursorAdapter(this, null, 0) {
+            /*
+        }
                 this,
                 R.layout.event_line_list_item,
                 null,
                 new String[]{DbSchema.COL_ID, DbSchema.COL_TITLE, DbSchema.COL_EVENT_COUNT,
-                        DbSchema.COL_LINE_TYPE},
+                        DbSchema.COL_LINE_TYPE, DbSchema.COL_AGGREGATE, DbSchema.COL_COLOR},
                 new int[]{R.id._id, R.id.line_title, R.id.line_event_count,
-                        R.id.line_type},
+                        R.id.line_type, R.id.aggregate, R.id.color},
                 0
         ) {
+        */
+            public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                LayoutInflater inflater = (LayoutInflater)
+                        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                return inflater.inflate(R.layout.event_line_list_item, parent, false);
+            }
+
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                // TODO: ViewHolder etc.
-                View v = super.getView(position, convertView, parent);
-                Object o = getItem(position);
-                return v;
+            public void bindView(View view, Context context, Cursor cursor) {
+                TextView idView = (TextView)view.findViewById(R.id._id);
+                TextView titleView = (TextView)view.findViewById(R.id.line_title);
+                TextView eventCountView = (TextView)view.findViewById(R.id.line_event_count);
+                TextView lineTypeView = (TextView)view.findViewById(R.id.line_type);
+                TextView aggregateView = (TextView)view.findViewById(R.id.aggregate);
+                TextView colorView = (TextView)view.findViewById(R.id.color);
+
+                idView.setText(cursor.getString(0));
+                titleView.setText(cursor.getString(1));
+                eventCountView.setText(cursor.getString(2));
+                lineTypeView.setText(String.valueOf(cursor.getInt(3)));
+                aggregateView.setText(String.valueOf(cursor.getInt(4)));
+//                view.setBackgroundColor(getResources().getColor(cursor.getInt(5)));
+                titleView.setTextColor(cursor.getInt(5));
             }
         };
 
@@ -470,8 +493,12 @@ public class MainActivity extends AppCompatActivity implements
             intent.setAction(DbAsyncOpsService.ACTION_CREATE_EVENT_LINE);
             int lineType = ((CreateEventLineDialogFragment) dialog).getSelectedType();
             String lineTitle = ((CreateEventLineDialogFragment) dialog).getTitle();
+            int color = ((CreateEventLineDialogFragment) dialog).getSelectedColor();
+            int aggregate = ((CreateEventLineDialogFragment) dialog).getAggregate();
             intent.putExtra(DbSchema.COL_LINE_TYPE, lineType);
             intent.putExtra(DbSchema.COL_TITLE, lineTitle);
+            intent.putExtra(DbSchema.COL_COLOR, color);
+            intent.putExtra(DbSchema.COL_AGGREGATE, aggregate);
             suspendInput();
             startService(intent);
         } else if(dialog instanceof EventNumericPropertyDialogFragment) {
