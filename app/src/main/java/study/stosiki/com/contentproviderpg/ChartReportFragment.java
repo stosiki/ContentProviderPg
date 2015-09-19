@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
-import study.stosiki.com.contentproviderpg.charts.TimeSeriesChartDemo01View;
+import study.stosiki.com.contentproviderpg.charts.ChartView;
 import study.stosiki.com.contentproviderpg.db.DbSchema;
 import study.stosiki.com.contentproviderpg.db.EventLinesContract;
 
@@ -94,7 +94,7 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
     }
 
     private void setChart(Cursor cursor) {
-        TimeSeriesChartDemo01View mView = new TimeSeriesChartDemo01View(getActivity(), cursor);
+        ChartView mView = new ChartView(getActivity(), cursor);
         ((ViewGroup)getView()).addView(mView);
     }
 

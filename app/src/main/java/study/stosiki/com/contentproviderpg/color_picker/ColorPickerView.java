@@ -97,6 +97,17 @@ public class ColorPickerView extends GridView {
         colorArrayList.add(getResources().getColor(R.color.lime_500));
         colorArrayList.add(getResources().getColor(R.color.orange_500));
         colorArrayList.add(getResources().getColor(R.color.teal_500));
+        colorArrayList.add(getResources().getColor(R.color.pink_500));
+        colorArrayList.add(getResources().getColor(R.color.purple_500));
+        colorArrayList.add(getResources().getColor(R.color.deep_purple_500));
+        colorArrayList.add(getResources().getColor(R.color.indigo_500));
+        colorArrayList.add(getResources().getColor(R.color.light_blue_500));
+        colorArrayList.add(getResources().getColor(R.color.cyan_500));
+        colorArrayList.add(getResources().getColor(R.color.green_500));
+        colorArrayList.add(getResources().getColor(R.color.light_green_500));
+        colorArrayList.add(getResources().getColor(R.color.amber_500));
+        colorArrayList.add(getResources().getColor(R.color.black));
+
         setColorsList(colorArrayList);
     }
 

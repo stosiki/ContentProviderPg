@@ -74,12 +74,9 @@ public class ColorImageView extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
         Drawable drawableBackground = ContextCompat.getDrawable(getContext(), R.drawable.circle);
         drawableBackground = DrawableCompat.wrap(drawableBackground);
         drawableBackground.mutate().setColorFilter(mColor, PorterDuff.Mode.SRC_IN);
-
-//        setImageDrawable(drawableBackground);
 
         Drawable drawableBorder = ContextCompat.getDrawable(getContext(), R.drawable.circle_border);
         drawableBorder = DrawableCompat.wrap(drawableBorder);
@@ -91,22 +88,5 @@ public class ColorImageView extends ImageView {
 
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{drawableBorder, drawableBackground});
         setImageDrawable(layerDrawable);
-//        setBackground(drawableBorder);
-
-/*
-        Bitmap circleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.circle);
-        Bitmap circleBorderBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.circle_border);
-
-        Bitmap bitmap = Bitmap.createBitmap(circleBitmap.getWidth(), circleBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-
-        canvas.drawBitmap(circleBitmap, 0, 0, null);
-        canvas.drawBitmap(circleBorderBitmap, 0, 0, null);
-
-        Bitmap result = Bitmap.createBitmap(firstImage.getWidth(), firstImage.getHeight(), firstImage.getConfig());
-Canvas canvas = new Canvas(result);
-canvas.drawBitmap(firstImage, 0f, 0f, null);
-canvas.drawBitmap(secondImage, 10, 10, null);
-return result;
-*/
     }
 }

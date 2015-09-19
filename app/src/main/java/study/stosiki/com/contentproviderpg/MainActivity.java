@@ -11,6 +11,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.media.Image;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -26,6 +28,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -122,14 +125,14 @@ public class MainActivity extends AppCompatActivity implements
                 TextView lineTypeView = (TextView)view.findViewById(R.id.line_type);
                 TextView aggregateView = (TextView)view.findViewById(R.id.aggregate);
                 TextView colorView = (TextView)view.findViewById(R.id.color);
+                ImageView symbolView = (ImageView)view.findViewById(R.id.symbol);
 
                 idView.setText(cursor.getString(0));
                 titleView.setText(cursor.getString(1));
                 eventCountView.setText(cursor.getString(2));
                 lineTypeView.setText(String.valueOf(cursor.getInt(3)));
                 aggregateView.setText(String.valueOf(cursor.getInt(4)));
-//                view.setBackgroundColor(getResources().getColor(cursor.getInt(5)));
-                titleView.setTextColor(cursor.getInt(5));
+                symbolView.getDrawable().setColorFilter(cursor.getInt(5), PorterDuff.Mode.MULTIPLY );
             }
         };
 

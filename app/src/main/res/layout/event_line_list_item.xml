@@ -6,6 +6,17 @@
     android:minHeight="48dp"
     >
 
+    <ImageView
+        android:id="@+id/symbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle"
+        android:maxWidth="24dp"
+        android:minWidth="24dp"
+        android:maxHeight="24dp"
+        android:minHeight="24dp"
+        />
+
     <TextView
         android:id="@+id/_id"
         android:layout_width="wrap_content"

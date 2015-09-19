@@ -84,16 +84,17 @@ import study.stosiki.com.contentproviderpg.events.StringEvent;
 /**
  * TimeSeriesChartDemo01View
  */
-public class TimeSeriesChartDemo01View extends DemoView {
+public class ChartView extends DemoView {
 
-    private static final String TAG = TimeSeriesChartDemo01View.class.getSimpleName();
+    private static final String TAG = ChartView.class.getSimpleName();
 
     private static final Shape CIRCLE_SHAPE = new OvalShape(-5, -5, 10, 10);
     private static final Shape SQUARE_SHAPE = new RectShape(-5, -5, 10, 10);
     private static final Shape[] NODE_SHAPES = new Shape[]{CIRCLE_SHAPE, SQUARE_SHAPE};
     private static final Font ANNOTATION_FONT = new Font("SansSerif", Typeface.BOLD, 36);
+    private static final double CCW_90 = Math.toRadians(-90);
 
-    public TimeSeriesChartDemo01View(Context context, Cursor cursor) {
+    public ChartView(Context context, Cursor cursor) {
         super(context);
         final AFreeChart chart = createChart(collectData(cursor));
         setChart(chart);
@@ -118,6 +119,11 @@ public class TimeSeriesChartDemo01View extends DemoView {
         plot.setDomainGridlinePaintType(new SolidColor(Color.WHITE));
         plot.setRangeGridlinePaintType(new SolidColor(Color.WHITE));
         plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
+
+        plot.getDomainAxis().setLabelFont(new Font("SansSerif", Typeface.NORMAL, 24));
+        plot.getRangeAxis().setLabelFont(new Font("SansSerif", Typeface.NORMAL, 24));
+        plot.getDomainAxis().setTickLabelFont(new Font("SansSerif", Typeface.NORMAL, 24));
+        plot.getRangeAxis().setTickLabelFont(new Font("SansSerif", Typeface.NORMAL, 24));
 
         // experimenting with settings
         plot.setDomainPannable(false);
@@ -151,6 +157,8 @@ public class TimeSeriesChartDemo01View extends DemoView {
         // sort through data,
         // if contains any LINE_TYPE_STRING series, extract it and convert to annotations
         // else add it to the data set
+        String chartTitle = null;
+
 
         // we need to traverse the data twice, because chartMinDomainValue, and chartMaxDomainValue,
         // are required to create annotations and determine domain values for SimpleEvents
@@ -158,6 +166,11 @@ public class TimeSeriesChartDemo01View extends DemoView {
         int chartMaxDomainValue = 0;
         int simpleLinesCount = 0;
         for(EventLine eventLine : data.values()) {
+            if(chartTitle == null) {
+                chartTitle = eventLine.getTitle();
+            } else {
+                chartTitle = chartTitle + ", " + eventLine.getTitle();
+            }
             if(eventLine.getType() == EventLine.LINE_TYPE_INTEGER) {
                 TimeSeries series = new TimeSeries(eventLine.getTitle());
                 Map<Day, Integer> seriesData = new HashMap<>();
@@ -198,22 +211,30 @@ public class TimeSeriesChartDemo01View extends DemoView {
 
         for(EventLine eventLine : data.values()) {
             if(eventLine.getType() == EventLine.LINE_TYPE_STRING) {
+                DateAxis dateAxis = (DateAxis)plot.getDomainAxis();
                 for(SimpleEvent event : eventLine.getEvents()) {
                     XYTextAnnotation annotation = new XYTextAnnotation(
-                            ((StringEvent)event).getComment(),
+                            ((StringEvent) event).getComment(),
                             event.getTimestamp(),
                             chartMinDomainValue
                     );
+                    if(event.getTimestamp() < dateAxis.getMinimumDate().getTime() ||
+                            dateAxis.getMinimumDate().getTime() == 0) {
+                        dateAxis.setMinimumDate(new Date(event.getTimestamp()));
+                    }
+                    if(event.getTimestamp() > dateAxis.getMaximumDate().getTime()) {
+                        dateAxis.setMaximumDate(new Date(event.getTimestamp()));
+                    }
                     annotation.setFont(ANNOTATION_FONT);
                     annotation.setTextAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAnchor(TextAnchor.BOTTOM_LEFT);
                     plot.addAnnotation(annotation);
-                    annotation.setRotationAngle(Math.toRadians(-90));
+                    annotation.setRotationAngle(CCW_90);
                 }
             }
         }
 
-//        chart.setTitle("something something");
+        chart.setTitle(chartTitle);
         return chart;
     }
 

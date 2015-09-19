@@ -59,11 +59,17 @@ public class Comments {
     //   (event line name - check for duplicates too), string input, number input
     // - CSV export
     // - Value Markers
+    //   - there's a thing with value markers (Annotations, actually). Problem is that they won't (necessarily) fit
+    //     onto domain axis. Possible solution might be to:
+    //      - drop them altogether
+    //      - never combine String type with any other type and show it on a vertical timeline chart
+    //        (will also require some calculations and will probably look very weird for marginal
+    //        cases when both short periods like minutes and long ones, like days should be visualized
     // - different chart types together
     //    - string (valuemarkers/valueticks)
     //    - numeric XY plot
     //    - basic (scattered plot X=const)
-    // - aggregated by day
+    // + aggregated by day
     // - (auto? with override?) individual background/text colors for eventlines
     // -- small charts
     //
