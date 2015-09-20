@@ -91,7 +91,7 @@ public class ChartView extends DemoView {
     private static final Shape CIRCLE_SHAPE = new OvalShape(-5, -5, 10, 10);
     private static final Shape SQUARE_SHAPE = new RectShape(-5, -5, 10, 10);
     private static final Shape[] NODE_SHAPES = new Shape[]{CIRCLE_SHAPE, SQUARE_SHAPE};
-    private static final Font ANNOTATION_FONT = new Font("SansSerif", Typeface.BOLD, 36);
+    private static final Font ANNOTATION_FONT = new Font("SansSerif", Typeface.NORMAL, 24);
     private static final double CCW_90 = Math.toRadians(-90);
 
     public ChartView(Context context, Cursor cursor) {
@@ -213,7 +213,7 @@ public class ChartView extends DemoView {
             if(eventLine.getType() == EventLine.LINE_TYPE_STRING) {
                 DateAxis dateAxis = (DateAxis)plot.getDomainAxis();
                 for(SimpleEvent event : eventLine.getEvents()) {
-                    XYTextAnnotation annotation = new XYTextAnnotation(
+                    MyXYTextAnnotation annotation = new MyXYTextAnnotation(
                             ((StringEvent) event).getComment(),
                             event.getTimestamp(),
                             chartMinDomainValue
@@ -228,8 +228,12 @@ public class ChartView extends DemoView {
                     annotation.setFont(ANNOTATION_FONT);
                     annotation.setTextAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAnchor(TextAnchor.BOTTOM_LEFT);
-                    plot.addAnnotation(annotation);
                     annotation.setRotationAngle(CCW_90);
+                    annotation.setOutlinePaintType(new SolidColor(Color.BLUE));
+                    annotation.setOutlineVisible(true);
+                    annotation.setBackgroundPaintType(new SolidColor(Color.YELLOW));
+                    annotation.setPaintType(new SolidColor(Color.BLUE));
+                    plot.addAnnotation(annotation);
                 }
             }
         }
