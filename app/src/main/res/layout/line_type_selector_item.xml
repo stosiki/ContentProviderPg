@@ -8,4 +8,9 @@
     android:checkMark="?android:attr/listChoiceIndicatorSingle"
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
     android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+    android:textSize="16sp"
+    android:paddingBottom="0dp"
+    android:paddingTop="0dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp"
     />

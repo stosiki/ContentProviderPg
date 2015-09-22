@@ -2,11 +2,19 @@ package study.stosiki.com.contentproviderpg.charts;
 
 /**
  * Created by 1 on 20/09/2015.
+ *
+ * This class is a bug fix for XYTextAnnotation.
+ * I had to take the class in its eneriety because the function in question namely draw, has access to
+ * private variables
+ *
+ * It also adds a variable to store the bounding box
+ *
  */
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -110,6 +118,11 @@ public class MyXYTextAnnotation extends AbstractXYAnnotation
      * @since JFreeChart 1.0.13
      */
     private transient float outlineStroke;
+
+    /**
+     * list of bounding boxes to avoid annotation cluttering
+     */
+    private RectShape boundingBox;
 
     /**
      * Creates a new annotation to be displayed at the given coordinates.  The
@@ -431,6 +444,8 @@ public class MyXYTextAnnotation extends AbstractXYAnnotation
         return this.outlineVisible;
     }
 
+    public RectShape getBoundingBox() { return boundingBox; }
+
     /**
      * Sets the flag that controls whether or not the outline is drawn.
      *
@@ -479,7 +494,9 @@ public class MyXYTextAnnotation extends AbstractXYAnnotation
         Paint paint = PaintUtility.createPaint(Paint.ANTI_ALIAS_FLAG, getPaintType(), getFont());
         RectShape hotspot = TextUtilities.calculateRotatedStringBounds(
                 getText(), paint, anchorX, anchorY, getTextAnchor(),
-                getRotationAngle(), getRotationAnchor());
+                Math.toDegrees(getRotationAngle()), getRotationAnchor());
+        boundingBox = hotspot;
+
         if (this.backgroundPaintType != null) {
             PaintUtility.updatePaint(paint, this.backgroundPaintType);
             hotspot.fill(canvas, paint);

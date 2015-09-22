@@ -8,24 +8,38 @@
     >
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         >
-    <include
+        <include
         android:id="@+id/tool_bar"
         layout="@layout/tool_bar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         />
-
-    <ListView
-        android:id="@android:id/list"
-        android:divider="@color/light_grey"
-        android:dividerHeight="1dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <ListView
+                android:id="@android:id/list"
+                android:divider="@color/light_grey"
+                android:dividerHeight="1dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/click_to_add_msg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/tap_to_add"
+                android:gravity="center"
+                android:visibility="gone"
+                />
+        </LinearLayout>
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/undo_bar"
         android:orientation="horizontal"

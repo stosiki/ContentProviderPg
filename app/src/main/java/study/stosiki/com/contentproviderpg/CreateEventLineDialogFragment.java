@@ -141,6 +141,7 @@ public class CreateEventLineDialogFragment extends DialogFragment implements Col
         eventLineTypeSelector.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         eventLineTypeSelector.getSelectedView();
 
+
         eventLineTypeSelector.setAdapter(eventTypesAdapter);
         setSelectedItem(DEFAULT_TYPE_POSITION);
         eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);

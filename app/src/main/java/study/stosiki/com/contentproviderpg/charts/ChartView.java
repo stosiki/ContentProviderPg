@@ -44,8 +44,8 @@ package study.stosiki.com.contentproviderpg.charts;
  * 19-Nov-2010 : Version 0.0.1 (NM);
  */
 
-import org.afree.chart.annotations.XYTextAnnotation;
 import org.afree.chart.axis.NumberAxis;
+import org.afree.chart.axis.ValueAxis;
 import org.afree.data.time.Day;
 import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
@@ -55,13 +55,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.afree.chart.ChartFactory;
 import org.afree.chart.AFreeChart;
 import org.afree.chart.axis.DateAxis;
 import org.afree.chart.plot.XYPlot;
 import org.afree.chart.renderer.xy.XYItemRenderer;
 import org.afree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.afree.data.time.TimeSeries;
+import org.afree.data.xy.XYDataset;
 import org.afree.graphics.SolidColor;
 import org.afree.graphics.geom.Font;
 import org.afree.graphics.geom.OvalShape;
@@ -88,6 +88,7 @@ public class ChartView extends DemoView {
 
     private static final String TAG = ChartView.class.getSimpleName();
 
+    //TODO: all pixel values has to be converted to dp
     private static final Shape CIRCLE_SHAPE = new OvalShape(-5, -5, 10, 10);
     private static final Shape SQUARE_SHAPE = new RectShape(-5, -5, 10, 10);
     private static final Shape[] NODE_SHAPES = new Shape[]{CIRCLE_SHAPE, SQUARE_SHAPE};
@@ -102,7 +103,7 @@ public class ChartView extends DemoView {
 
     private static AFreeChart createChart(Map<Integer, EventLine> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        AFreeChart chart = ChartFactory.createTimeSeriesChart(
+        AFreeChart chart = createTimeSeriesChart(
                 "",  // title
                 "Date",             // x-axis label
                 "",   // y-axis label
@@ -229,17 +230,58 @@ public class ChartView extends DemoView {
                     annotation.setTextAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAngle(CCW_90);
-                    annotation.setOutlinePaintType(new SolidColor(Color.BLUE));
-                    annotation.setOutlineVisible(true);
-                    annotation.setBackgroundPaintType(new SolidColor(Color.YELLOW));
-                    annotation.setPaintType(new SolidColor(Color.BLUE));
+//                    annotation.setOutlinePaintType(new SolidColor(Color.BLUE));
+//                    annotation.setOutlineVisible(true);
+//                    annotation.setBackgroundPaintType(new SolidColor(Color.YELLOW));
+                    annotation.setPaintType(new SolidColor(Color.BLACK));
                     plot.addAnnotation(annotation);
                 }
             }
+            //TODO: extend chart domain axis half the height of annotation text string on both sides
         }
+
 
         chart.setTitle(chartTitle);
         return chart;
+    }
+
+    private static AFreeChart createTimeSeriesChart(String title,
+                                                   String timeAxisLabel,
+                                                   String valueAxisLabel,
+                                                   XYDataset dataset,
+                                                   boolean legend,
+                                                   boolean tooltips,
+                                                   boolean urls) {
+
+        ValueAxis timeAxis = new DateAxis(timeAxisLabel);
+        timeAxis.setLowerMargin(0.02);  // reduce the default margins
+        timeAxis.setUpperMargin(0.02);
+        NumberAxis valueAxis = new NumberAxis(valueAxisLabel);
+        valueAxis.setAutoRangeIncludesZero(false);  // override default
+        XYPlotWoAnnotationClutter plot = new XYPlotWoAnnotationClutter(dataset, timeAxis, valueAxis, null);
+
+//        XYToolTipGenerator toolTipGenerator = null;
+//        if (tooltips) {
+//            toolTipGenerator
+//                = StandardXYToolTipGenerator.getTimeSeriesInstance();
+//        }
+//
+//        XYURLGenerator urlGenerator = null;
+//        if (urls) {
+//            urlGenerator = new StandardXYURLGenerator();
+//        }
+
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true,
+                false);
+//        renderer.setBaseToolTipGenerator(toolTipGenerator);
+//        renderer.setURLGenerator(urlGenerator);
+        plot.setRenderer(renderer);
+
+        AFreeChart chart = new AFreeChart(title, AFreeChart.DEFAULT_TITLE_FONT,
+                plot, legend);
+//        currentTheme.apply(chart);
+        return chart;
+
     }
 
     /**

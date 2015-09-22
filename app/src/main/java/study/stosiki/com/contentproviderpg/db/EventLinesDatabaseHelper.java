@@ -13,7 +13,7 @@ import study.stosiki.com.contentproviderpg.db.DbSchema;
 public class EventLinesDatabaseHelper extends SQLiteOpenHelper implements DbSchema {
     private static final SQLiteDatabase.CursorFactory DEFAULT_CURSOR_FACTORY = null;
     private static final String DB_FILE_NAME = "event_lines.db";
-    private static final int DB_VERSION = 17;
+    private static final int DB_VERSION = 18;
 
     public EventLinesDatabaseHelper(Context context) {
         super(context, DB_FILE_NAME, DEFAULT_CURSOR_FACTORY, DB_VERSION);
@@ -27,7 +27,7 @@ public class EventLinesDatabaseHelper extends SQLiteOpenHelper implements DbSche
         db.execSQL(DbSchema.DDL_CREATE_TBL_EVENTS);
         db.execSQL(DbSchema.DDL_CREATE_VIEW_EVENT_LINE_LIST_ITEMS);
         db.execSQL(DbSchema.DDL_CREATE_VIEW_EVENT_REPORT);
-        fakeData(db);
+//        fakeData(db);
     }
 
     private void fakeData(SQLiteDatabase db) {

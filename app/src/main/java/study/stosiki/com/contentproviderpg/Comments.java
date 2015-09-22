@@ -58,19 +58,19 @@ public class Comments {
     // +~ Add input verification and error indications to all user input
     //   (event line name - check for duplicates too), string input, number input
     // - CSV export
-    // - Value Markers
+    // + Value Markers
     //   - there's a thing with value markers (Annotations, actually). Problem is that they won't (necessarily) fit
     //     onto domain axis. Possible solution might be to:
     //      - drop them altogether
     //      - never combine String type with any other type and show it on a vertical timeline chart
     //        (will also require some calculations and will probably look very weird for marginal
     //        cases when both short periods like minutes and long ones, like days should be visualized
-    // - different chart types together
+    // + different chart types together
     //    - string (valuemarkers/valueticks)
     //    - numeric XY plot
     //    - basic (scattered plot X=const)
     // + aggregated by day
-    // - (auto? with override?) individual background/text colors for eventlines
+    // + (auto? with override?) individual background/text colors for eventlines
     // -- small charts
     //
 
@@ -78,10 +78,14 @@ public class Comments {
 // Also check out Google Analysis:
     // https://support.google.com/docs/answer/6280499?p=explore_sheets&rd=1
 
-    // simple, simple
-    // simple, string
-    // string, string
-    // integer, integer
-    // integer, simple
-    // integer, string
+  /** BUGS **/
+    // - newly added line appears on the list background
+
+
+    /** Features to add **/
+    // - (remove, actually) Save
+    // - redesign line create dialog - it's fucking atrocious
+    // - add "line name must not be empty" notification to the line create dialog
+    // - add "Click on the Plus button to add event line" message and remove dummy lines from db
+
 }

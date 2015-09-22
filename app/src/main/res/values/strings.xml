@@ -9,4 +9,5 @@
     <string name="duplicate_eventline_name">Event line with that name already exists</string>
     <string name="duplicate_eventline_name_error_msg">Line with that name already exists</string>
     <string name="aggregate_daily_check">Aggregate on Daily Basis</string>
+    <string name="tap_to_add">Tap the Button to add an Event Line</string>
 </resources>

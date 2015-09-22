@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements
     private View undoContainer;
     private FloatingActionButton addEventLineControl;
     private Toolbar toolbar;
+    private TextView clickToAddMsg;
 
     /** state of activity, determines which menu items are available and user actions permitted **/
     private int activityMode;
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements
                 addEventLine();
             }
         });
+        clickToAddMsg = (TextView)findViewById(R.id.click_to_add_msg);
 
         activityMode = MODE_NORMAL;
 
@@ -99,18 +101,20 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         cursorAdapter = new CursorAdapter(this, null, 0) {
-            /*
-        }
-                this,
-                R.layout.event_line_list_item,
-                null,
-                new String[]{DbSchema.COL_ID, DbSchema.COL_TITLE, DbSchema.COL_EVENT_COUNT,
-                        DbSchema.COL_LINE_TYPE, DbSchema.COL_AGGREGATE, DbSchema.COL_COLOR},
-                new int[]{R.id._id, R.id.line_title, R.id.line_event_count,
-                        R.id.line_type, R.id.aggregate, R.id.color},
-                0
-        ) {
-        */
+
+            @Override
+            public Cursor swapCursor(Cursor newCursor) {
+                if(newCursor == null || newCursor.getCount() == 0) {
+                    clickToAddMsg.setVisibility(View.VISIBLE);
+                    listView.setVisibility(View.GONE);
+                } else {
+                    clickToAddMsg.setVisibility(View.GONE);
+                    listView.setVisibility(View.VISIBLE);
+                }
+                resetListItemsBgColor();
+                return super.swapCursor(newCursor);
+            }
+
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
                 LayoutInflater inflater = (LayoutInflater)
                         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -132,16 +136,16 @@ public class MainActivity extends AppCompatActivity implements
                 eventCountView.setText(cursor.getString(2));
                 lineTypeView.setText(String.valueOf(cursor.getInt(3)));
                 aggregateView.setText(String.valueOf(cursor.getInt(4)));
-                symbolView.getDrawable().setColorFilter(cursor.getInt(5), PorterDuff.Mode.MULTIPLY );
+                symbolView.getDrawable().setColorFilter(cursor.getInt(5), PorterDuff.Mode.ADD);
             }
         };
 
         undoContainer = (View)findViewById(R.id.undo_bar);
 
-
         listView = (ListView)findViewById(android.R.id.list);
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LINES_LOADER_ID, null, this);
+        listView.setEmptyView(findViewById(R.id.click_to_add_msg));
 
         selectedEventLinePositions = new ArrayList<Integer>();
         resetSelection();
@@ -178,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+        resetSelection();
+        highlightSelectedItems();
 
         eventBus.register(this);
     }
@@ -204,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements
         for(int i=0; i<listView.getChildCount(); i++) {
             listView.getChildAt(i).setBackgroundColor(
                     getResources().getColor(R.color.event_line_item_bg));
+            listView.getChildAt(i).invalidate();
         }
     }
 
@@ -224,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements
     private ArrayList<String> lineNames() {
         ArrayList<String> names = new ArrayList<>();
         for(int i=0; i<listView.getChildCount(); i++) {
-            names.add(((TextView)listView.getChildAt(i).
+            names.add(((TextView) listView.getChildAt(i).
                     findViewById(R.id.line_title)).getText().toString());
         }
         return names;
@@ -444,10 +451,10 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch(loader.getId()) {
             case EVENT_LINES_LOADER_ID:
-                resetListItemsBgColor();
                 cursorAdapter.swapCursor(cursor);
                 cursorAdapter.notifyDataSetChanged();
                 cursorAdapter.notifyDataSetInvalidated();
+                resetListItemsBgColor();
                 break;
             default:
                 Log.e(TAG, "Unknown adapter id");
