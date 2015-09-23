@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,12 +16,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import study.stosiki.com.contentproviderpg.color_picker.ColorPickerView;
 import study.stosiki.com.contentproviderpg.color_picker.ColorPickerViewListener;
+import study.stosiki.com.contentproviderpg.events.EventLine;
 
 /**
  * Created by mike on 7/26/2015.
@@ -47,7 +51,7 @@ public class CreateEventLineDialogFragment extends DialogFragment implements Col
     private ColorPickerView colorPicker;
 
     private int selectedColor;
-
+    private int selectedType;
     private ArrayList<String> lineNames;
 
     public CreateEventLineDialogFragment() {}
@@ -98,12 +102,15 @@ public class CreateEventLineDialogFragment extends DialogFragment implements Col
                             dialog.dismiss();
                             break;
                         case INPUT_EMPTY:
-                            eventLineTitleEntry.setHintTextColor(
-                                getResources().getColor(android.R.color.holo_blue_bright));
+//                            eventLineTitleEntry.setHintTextColor(
+//                                    getResources().getColor(android.R.color.holo_blue_bright));
+                            errorMessage.setText(R.string.empty_event_line_name);
+                            errorMessage.setVisibility(View.VISIBLE);
                             break;
                         case INPUT_DUPLICATE_NAME:
-//                            errorMessage.setText(R.string.duplicate_eventline_name_error_msg);
+                            errorMessage.setText(R.string.duplicate_eventline_name_error_msg);
                             errorMessage.setVisibility(View.VISIBLE);
+                            eventLineTitleEntry.setHighlightColor(getResources().getColor(R.color.error_color));
                             break;
                     }
                 }
@@ -134,6 +141,7 @@ public class CreateEventLineDialogFragment extends DialogFragment implements Col
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+/*
         String[] eventLineTypes = new String[]{"Basic", "Number", "Comment"};
         ArrayAdapter<String> eventTypesAdapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.line_type_selector_item, eventLineTypes);
@@ -144,10 +152,48 @@ public class CreateEventLineDialogFragment extends DialogFragment implements Col
 
         eventLineTypeSelector.setAdapter(eventTypesAdapter);
         setSelectedItem(DEFAULT_TYPE_POSITION);
-        eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);
-        errorMessage = (TextView)view.findViewById(R.id.error_msg_text);
-
+*/
         aggregateDailyCheck = (CheckBox)view.findViewById(R.id.aggregate_daily_check);
+
+        RadioGroup lineTypeSelector = (RadioGroup)view.findViewById(R.id.line_type_radio);
+        lineTypeSelector.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.basic_line_type:
+                        selectedType = EventLine.LINE_TYPE_SIMPLE;
+                        aggregateDailyCheck.setEnabled(true);
+                        break;
+                    case R.id.integer_line_type:
+                        selectedType = EventLine.LINE_TYPE_INTEGER;
+                        aggregateDailyCheck.setEnabled(true);
+                        break;
+                    case R.id.string_line_type:
+                        selectedType = EventLine.LINE_TYPE_STRING;
+                        aggregateDailyCheck.setEnabled(false);
+                        break;
+                }
+            }
+        });
+        lineTypeSelector.check(R.id.basic_line_type);
+
+        eventLineTitleEntry = (EditText)view.findViewById(R.id.event_line_title_entry);
+        eventLineTitleEntry.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                errorMessage.setVisibility(View.INVISIBLE);
+            }
+        });
+        errorMessage = (TextView)view.findViewById(R.id.error_msg_text);
 
         colorPicker = (ColorPickerView)view.findViewById(R.id.line_color_picker);
         colorPicker.setListener(this);
@@ -156,7 +202,6 @@ public class CreateEventLineDialogFragment extends DialogFragment implements Col
     @Override
     public void onColorPickerClick(int colorPosition) {
         selectedColor = colorPicker.getColor(colorPosition);
-//        Log.d(TAG, "TEST color: "+colorPosition);
     }
 
     private void setSelectedItem(final int position) {
@@ -164,7 +209,7 @@ public class CreateEventLineDialogFragment extends DialogFragment implements Col
     }
 
     public int getSelectedType() {
-        return eventLineTypeSelector.getCheckedItemPosition();
+        return selectedType;
     }
 
     public String getTitle() {

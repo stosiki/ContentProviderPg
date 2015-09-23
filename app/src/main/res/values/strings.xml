@@ -10,4 +10,8 @@
     <string name="duplicate_eventline_name_error_msg">Line with that name already exists</string>
     <string name="aggregate_daily_check">Aggregate on Daily Basis</string>
     <string name="tap_to_add">Tap the Button to add an Event Line</string>
+    <string name="basic_line_type">Basic</string>
+    <string name="integer_line_type">Number</string>
+    <string name="comment_line_type">Comment</string>
+    <string name="empty_event_line_name">Line name must not be empty</string>
 </resources>

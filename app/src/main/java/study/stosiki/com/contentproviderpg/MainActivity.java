@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements
                     clickToAddMsg.setVisibility(View.GONE);
                     listView.setVisibility(View.VISIBLE);
                 }
-                resetListItemsBgColor();
+                resetSelection();
                 return super.swapCursor(newCursor);
             }
 
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements
                 eventCountView.setText(cursor.getString(2));
                 lineTypeView.setText(String.valueOf(cursor.getInt(3)));
                 aggregateView.setText(String.valueOf(cursor.getInt(4)));
-                symbolView.getDrawable().setColorFilter(cursor.getInt(5), PorterDuff.Mode.ADD);
+                symbolView.getDrawable().setColorFilter(cursor.getInt(5), PorterDuff.Mode.SRC_ATOP);
             }
         };
 
@@ -183,8 +183,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         resetSelection();
-        highlightSelectedItems();
-
         eventBus.register(this);
     }
 

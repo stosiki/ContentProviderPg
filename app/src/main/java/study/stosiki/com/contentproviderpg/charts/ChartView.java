@@ -46,6 +46,7 @@ package study.stosiki.com.contentproviderpg.charts;
 
 import org.afree.chart.axis.NumberAxis;
 import org.afree.chart.axis.ValueAxis;
+import org.afree.chart.text.TextUtilities;
 import org.afree.data.time.Day;
 import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
@@ -73,6 +74,7 @@ import org.afree.ui.TextAnchor;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 
 import study.stosiki.com.contentproviderpg.MainActivity;
@@ -101,7 +103,7 @@ public class ChartView extends DemoView {
         setChart(chart);
     }
 
-    private static AFreeChart createChart(Map<Integer, EventLine> data) {
+    private AFreeChart createChart(Map<Integer, EventLine> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         AFreeChart chart = createTimeSeriesChart(
                 "",  // title
@@ -222,20 +224,30 @@ public class ChartView extends DemoView {
                     if(event.getTimestamp() < dateAxis.getMinimumDate().getTime() ||
                             dateAxis.getMinimumDate().getTime() == 0) {
                         dateAxis.setMinimumDate(new Date(event.getTimestamp()));
+
                     }
                     if(event.getTimestamp() > dateAxis.getMaximumDate().getTime()) {
                         dateAxis.setMaximumDate(new Date(event.getTimestamp()));
                     }
+//                    TextUtilities.
                     annotation.setFont(ANNOTATION_FONT);
                     annotation.setTextAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAngle(CCW_90);
+
+//                    double fontToDateDiff = dateAxis.java2DToValue(ANNOTATION_FONT.getSize(),
+//                            plot.getDomainAxis().get)
 //                    annotation.setOutlinePaintType(new SolidColor(Color.BLUE));
 //                    annotation.setOutlineVisible(true);
 //                    annotation.setBackgroundPaintType(new SolidColor(Color.YELLOW));
                     annotation.setPaintType(new SolidColor(Color.BLACK));
                     plot.addAnnotation(annotation);
                 }
+                long r1 = dateAxis.getMaximumDate().getTime() - dateAxis.getMinimumDate().getTime();
+
+                int width = 1000;
+                double r2 = r1*(width + ANNOTATION_FONT.getSize()) / width;
+                dateAxis.setMinimumDate(new Date(dateAxis.getMinimumDate().getTime() - (long)r2));
             }
             //TODO: extend chart domain axis half the height of annotation text string on both sides
         }

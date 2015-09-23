@@ -10,37 +10,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Event Line Title"
-
+        android:layout_marginBottom="0dp"
+        android:paddingBottom="6dp"
         />
     <TextView
         android:id="@+id/error_msg_text"
         android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#ffabcdef"
         android:textColor="@color/error_msg_text"
         android:text="@string/duplicate_eventline_name"
+        android:textSize="12sp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="0dp"
+        android:paddingTop="0dp"
         />
-
-    <ListView
-        android:id="@+id/event_line_type_selector"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        />
-
-    <CheckBox
-        android:id="@+id/aggregate_daily_check"
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/line_type_radio"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/aggregate_daily_check"
-        />
+        android:orientation="horizontal"
+        >
+        <RadioButton android:id="@+id/basic_line_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/basic_line_type"
+            />
+        <RadioButton android:id="@+id/integer_line_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/integer_line_type"
+            />
+        <RadioButton android:id="@+id/string_line_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/comment_line_type"
+            />
+    </RadioGroup>
 
     <study.stosiki.com.contentproviderpg.color_picker.ColorPickerView
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/line_color_picker"
-        android:layout_margin="@dimen/spacing_xlarge"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:columnWidth="24dp"
         android:numColumns="8"
         android:verticalSpacing="8dp"
@@ -50,5 +63,14 @@
         android:layout_gravity="center"
         custom:borderColorSelected="@color/accent"
         custom:borderColor="@color/grey_60alpha"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        />
+
+    <CheckBox
+        android:id="@+id/aggregate_daily_check"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/aggregate_daily_check"
         />
 </LinearLayout>

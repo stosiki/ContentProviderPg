@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:minHeight="48dp"
+    android:background="@color/event_line_item_bg"
+    android:gravity="center_vertical"
     >
 
     <ImageView
