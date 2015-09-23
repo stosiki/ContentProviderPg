@@ -40,41 +40,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/undo_bar"
-        android:orientation="horizontal"
-        android:visibility="invisible"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:alpha="100"
 
-        android:dividerPadding="12dp"
-        android:padding="4dp"
-        android:gravity="center|bottom"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
-        <TextView
-            android:id="@+id/undo_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Deleted"
-            android:textColor="#ffffff"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            />
-        <Button
-            android:id="@+id/undo_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Undo"
-            android:layout_marginLeft="30dp"
-            android:onClick="onUndoClick"
-            android:background="#808080"
-            android:drawableLeft="@drawable/ic_undo_black_24dp"
-            android:textColor="#fff"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            />
-    </LinearLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_event_line_widget"
         android:layout_width="wrap_content"
@@ -85,7 +51,46 @@
         android:layout_marginRight="16dp"
         android:layout_gravity="bottom|right"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"
+        />
+
+    <LinearLayout
+        android:id="@+id/undo_bar"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@color/background_floating_material_dark"
+        android:alpha="100"
+        android:dividerPadding="12dp"
+        android:padding="4dp"
+        android:gravity="center|bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        >
+
+        <TextView
+            android:id="@+id/undo_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/background_floating_material_dark"
+            android:text="Event Line deleted"
+            android:textColor="#ffeeeeee"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+        <Button
+            android:id="@+id/undo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UNDO"
+            android:layout_marginLeft="30dp"
+            android:onClick="onUndoClick"
+            android:background="@color/background_floating_material_dark"
+            android:textColor="#ffeb3b"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+    </LinearLayout>
     <View
         android:id="@+id/dummy_removed_bg"
         android:layout_width="wrap_content"

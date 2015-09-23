@@ -1,0 +1,10 @@
++ newly created line item doesn't have proper bg color
++ no error message when OK is clicked with empty line name on create dialog
++ when basic or comments line type is selected, "Aggregate" checkbox should be disabled
++ comment chart doesn't show first comment
++ basic line type chart doesn't actually show anything
+~ undo bar is atrocious
+- basic starts with 1 for no good reason only when used with comment on the same graph (it is ok with integer though)
+- comments on the chart are way too close to the range axis, also maybe a tick for each comment
+- undo bar should push the "Add" button up when it raises, not overlap it
+

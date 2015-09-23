@@ -210,6 +210,38 @@ public class ChartView extends DemoView {
         // collect and aggregate Simple events
         // we need to do it in a separate pass because domain range determining positions
         for(EventLine eventLine : data.values()) {
+            if(eventLine.getType() == EventLine.LINE_TYPE_SIMPLE) {
+                DateAxis dateAxis = (DateAxis)plot.getDomainAxis();
+                TimeSeries series = new TimeSeries(eventLine.getTitle());
+                Map<Day, Integer> seriesData = new HashMap<>();
+                for(SimpleEvent event : eventLine.getEvents()) {
+                    long timestamp = event.getTimestamp();
+                    if(eventLine.getAggregate() == EventLine.AGGREGATE_DAILY) {
+                        Day d = new Day(new Date(timestamp));
+                        if (seriesData.containsKey(d) == false) {
+                            seriesData.put(d, 0);
+                        }
+                        seriesData.put(d, seriesData.get(d).intValue() + 1);
+                    }
+                    if(eventLine.getAggregate() == EventLine.AGGREGATE_DAILY) {
+                        for (Day day : seriesData.keySet()) {
+                            series.add(day, seriesData.get(day));
+                        }
+                    } else {
+                        // here we have to assign value in such a way that in case there's already
+                        // an integer series in a data set, simple series is located in the middle
+                        // otherwise value = simpleLinesCount--;
+                        if(dataset.getSeriesCount() > 0) { // it can be only integer ones, because
+                            // that's what we've added so far
+                            series.add(new FixedMillisecond(timestamp),
+                                    (int) ((chartMaxDomainValue + chartMinDomainValue) / 2));
+                        } else {
+                            series.add(new FixedMillisecond(timestamp), simpleLinesCount--);
+                        }
+                    }
+                    dataset.addSeries(series);
+                }
+            }
         }
 
         for(EventLine eventLine : data.values()) {
@@ -229,27 +261,19 @@ public class ChartView extends DemoView {
                     if(event.getTimestamp() > dateAxis.getMaximumDate().getTime()) {
                         dateAxis.setMaximumDate(new Date(event.getTimestamp()));
                     }
-//                    TextUtilities.
                     annotation.setFont(ANNOTATION_FONT);
                     annotation.setTextAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAnchor(TextAnchor.BOTTOM_LEFT);
                     annotation.setRotationAngle(CCW_90);
-
-//                    double fontToDateDiff = dateAxis.java2DToValue(ANNOTATION_FONT.getSize(),
-//                            plot.getDomainAxis().get)
-//                    annotation.setOutlinePaintType(new SolidColor(Color.BLUE));
-//                    annotation.setOutlineVisible(true);
-//                    annotation.setBackgroundPaintType(new SolidColor(Color.YELLOW));
                     annotation.setPaintType(new SolidColor(Color.BLACK));
                     plot.addAnnotation(annotation);
                 }
                 long r1 = dateAxis.getMaximumDate().getTime() - dateAxis.getMinimumDate().getTime();
-
-                int width = 1000;
+                //TODO: hardcoded, good for most devices, but would be better to figure width of an actual window
+                int width = 800;
                 double r2 = r1*(width + ANNOTATION_FONT.getSize()) / width;
-                dateAxis.setMinimumDate(new Date(dateAxis.getMinimumDate().getTime() - (long)r2));
+                dateAxis.setMinimumDate(new Date(dateAxis.getMinimumDate().getTime() - (long)(r2-r1)));
             }
-            //TODO: extend chart domain axis half the height of annotation text string on both sides
         }
 
 
@@ -272,25 +296,10 @@ public class ChartView extends DemoView {
         valueAxis.setAutoRangeIncludesZero(false);  // override default
         XYPlotWoAnnotationClutter plot = new XYPlotWoAnnotationClutter(dataset, timeAxis, valueAxis, null);
 
-//        XYToolTipGenerator toolTipGenerator = null;
-//        if (tooltips) {
-//            toolTipGenerator
-//                = StandardXYToolTipGenerator.getTimeSeriesInstance();
-//        }
-//
-//        XYURLGenerator urlGenerator = null;
-//        if (urls) {
-//            urlGenerator = new StandardXYURLGenerator();
-//        }
-
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true,
-                false);
-//        renderer.setBaseToolTipGenerator(toolTipGenerator);
-//        renderer.setURLGenerator(urlGenerator);
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, false);
         plot.setRenderer(renderer);
 
-        AFreeChart chart = new AFreeChart(title, AFreeChart.DEFAULT_TITLE_FONT,
-                plot, legend);
+        AFreeChart chart = new AFreeChart(title, AFreeChart.DEFAULT_TITLE_FONT, plot, legend);
 //        currentTheme.apply(chart);
         return chart;
 
