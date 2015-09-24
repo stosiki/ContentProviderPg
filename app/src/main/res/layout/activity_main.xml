@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     >
@@ -41,35 +41,44 @@
     </LinearLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_event_line_widget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_circle_black_24dp"
-        app:elevation="4dp"
-        app:borderWidth="0dp"
-        android:layout_marginRight="16dp"
-        android:layout_gravity="bottom|right"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        />
+
 
     <LinearLayout
-        android:id="@+id/undo_bar"
-        android:orientation="horizontal"
-        android:visibility="invisible"
+        android:id="@+id/main_footer"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:background="@color/background_floating_material_dark"
-        android:alpha="100"
-        android:dividerPadding="12dp"
-        android:padding="4dp"
         android:gravity="center|bottom"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:background="#ff88ccff"
         >
-
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add_event_line_widget"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_circle_black_24dp"
+            app:elevation="4dp"
+            app:borderWidth="0dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="#ffaa99ee"
+            android:layout_marginBottom="16dp"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/undo_bar"
+        android:dividerPadding="12dp"
+        android:padding="4dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:background="@color/background_floating_material_dark"
+        android:layout_below="@id/main_footer"
+        android:alpha="100"
+        >
         <TextView
             android:id="@+id/undo_message"
             android:layout_width="wrap_content"
@@ -88,14 +97,6 @@
             android:onClick="onUndoClick"
             android:background="@color/background_floating_material_dark"
             android:textColor="#ffeb3b"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
-    <View
-        android:id="@+id/dummy_removed_bg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/deleted_red"
-        android:visibility="invisible"
-        />
 </RelativeLayout>

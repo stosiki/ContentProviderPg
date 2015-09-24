@@ -47,13 +47,17 @@ package study.stosiki.com.contentproviderpg.charts;
 import org.afree.chart.axis.NumberAxis;
 import org.afree.chart.axis.ValueAxis;
 import org.afree.chart.text.TextUtilities;
+import org.afree.data.Range;
 import org.afree.data.time.Day;
 import org.afree.data.time.FixedMillisecond;
 import org.afree.data.time.TimeSeriesCollection;
 
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.afree.chart.AFreeChart;
@@ -111,7 +115,7 @@ public class ChartView extends DemoView {
                 "",   // y-axis label
                 dataset,            // data
                 true,               // create legend?
-                true,               // generate tooltips?
+                false,               // generate tooltips?
                 false               // generate URLs?
         );
 
@@ -132,42 +136,24 @@ public class ChartView extends DemoView {
         plot.setDomainPannable(false);
         plot.setRangePannable(false);
         plot.getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-
-        XYItemRenderer r = plot.getRenderer();
-        //TODO: graphical properties of the charts have to be adjusted according to the dataset
-        if (r instanceof XYLineAndShapeRenderer) {
-            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-            renderer.setBaseShapesVisible(true);
-            renderer.setBaseShapesFilled(true);
-//            Shape cross = ShapeUtilities..createDiagonalCross(3, 1);
-            renderer.setBaseShape(CIRCLE_SHAPE);
-            for(int i=0; i< MainActivity.MAX_SELECTION_SIZE; i++) {
-                renderer.setSeriesShape(i, NODE_SHAPES[i]);
-                renderer.setSeriesShapesFilled(i, true);
-                renderer.setSeriesShapesVisible(i, true);
-
-                renderer.setSeriesStroke(i, 5.0f);
-            }
-
-//            renderer.setSeriesLinesVisible(0, false);
-            renderer.setDrawSeriesLineAsPath(true);
-        }
-
-        DateAxis axis = (DateAxis) plot.getDomainAxis();
-//        axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
-
+        plot.setOutlineVisible(false);
+        ((DateAxis)plot.getDomainAxis()).setDateFormatOverride(new SimpleDateFormat("dd-MM-yy hh:mm"));
+//        dateAxis.s
 
         // sort through data,
         // if contains any LINE_TYPE_STRING series, extract it and convert to annotations
         // else add it to the data set
         String chartTitle = null;
 
+        List<SeriesRenderProps> seriesRenderPropsList = new ArrayList<>();
 
         // we need to traverse the data twice, because chartMinDomainValue, and chartMaxDomainValue,
         // are required to create annotations and determine domain values for SimpleEvents
         int chartMinDomainValue = 0;
         int chartMaxDomainValue = 0;
         int simpleLinesCount = 0;
+        boolean integerLinePresent = false;
+
         for(EventLine eventLine : data.values()) {
             if(chartTitle == null) {
                 chartTitle = eventLine.getTitle();
@@ -175,6 +161,7 @@ public class ChartView extends DemoView {
                 chartTitle = chartTitle + ", " + eventLine.getTitle();
             }
             if(eventLine.getType() == EventLine.LINE_TYPE_INTEGER) {
+                integerLinePresent = true;
                 TimeSeries series = new TimeSeries(eventLine.getTitle());
                 Map<Day, Integer> seriesData = new HashMap<>();
                 for(SimpleEvent event : eventLine.getEvents()) {
@@ -202,6 +189,8 @@ public class ChartView extends DemoView {
                     }
                 }
                 dataset.addSeries(series);
+                seriesRenderPropsList.add(new SeriesRenderProps(
+                        eventLine.getType(), eventLine.getTitle(), eventLine.getColor(), eventLine.getAggregate()));
             } else if(eventLine.getType() == EventLine.LINE_TYPE_SIMPLE) {
                 simpleLinesCount++;
             }
@@ -222,25 +211,28 @@ public class ChartView extends DemoView {
                             seriesData.put(d, 0);
                         }
                         seriesData.put(d, seriesData.get(d).intValue() + 1);
-                    }
-                    if(eventLine.getAggregate() == EventLine.AGGREGATE_DAILY) {
-                        for (Day day : seriesData.keySet()) {
-                            series.add(day, seriesData.get(day));
-                        }
-                    } else {
-                        // here we have to assign value in such a way that in case there's already
-                        // an integer series in a data set, simple series is located in the middle
+                    }  else {
+                        // here we have to assign value in such a way that
+                        // in case there's already an integer series in a data set, simple series is located in the middle
                         // otherwise value = simpleLinesCount--;
-                        if(dataset.getSeriesCount() > 0) { // it can be only integer ones, because
-                            // that's what we've added so far
+                        if(integerLinePresent) {
                             series.add(new FixedMillisecond(timestamp),
                                     (int) ((chartMaxDomainValue + chartMinDomainValue) / 2));
                         } else {
-                            series.add(new FixedMillisecond(timestamp), simpleLinesCount--);
+                            series.add(new FixedMillisecond(timestamp), simpleLinesCount - 1);
                         }
                     }
-                    dataset.addSeries(series);
                 }
+                if(eventLine.getAggregate() == EventLine.AGGREGATE_DAILY) {
+                    for (Day day : seriesData.keySet()) {
+                        series.add(day, seriesData.get(day));
+                    }
+                }
+                seriesRenderPropsList.add(new SeriesRenderProps(
+                        eventLine.getType(), eventLine.getTitle(), eventLine.getColor(), eventLine.getAggregate()));
+                dataset.addSeries(series);
+                simpleLinesCount--;
+
             }
         }
 
@@ -272,10 +264,33 @@ public class ChartView extends DemoView {
                 //TODO: hardcoded, good for most devices, but would be better to figure width of an actual window
                 int width = 800;
                 double r2 = r1*(width + ANNOTATION_FONT.getSize()) / width;
-                dateAxis.setMinimumDate(new Date(dateAxis.getMinimumDate().getTime() - (long)(r2-r1)));
+                dateAxis.setMinimumDate(new Date(dateAxis.getMinimumDate().getTime() - (long) (r2 - r1)));
             }
         }
 
+        XYItemRenderer r = plot.getRenderer();
+        if (r instanceof XYLineAndShapeRenderer) {
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
+            renderer.setBaseShapesVisible(true);
+            renderer.setBaseShapesFilled(true);
+            renderer.setBaseShape(CIRCLE_SHAPE);
+            for(int i=0; i<seriesRenderPropsList.size(); i++) {
+                SeriesRenderProps props = seriesRenderPropsList.get(i);
+                renderer.setSeriesShape(i, NODE_SHAPES[i]);
+                renderer.setSeriesShapesFilled(i, true);
+                renderer.setSeriesShapesVisible(i, true);
+                renderer.setSeriesStroke(i, 5.0f);
+                renderer.setSeriesPaintType(i, new SolidColor(Integer.parseInt(props.getColor())));
+
+                if(props.getType() == EventLine.LINE_TYPE_SIMPLE &&
+                        props.getAggregated() == EventLine.AGGREGATE_NONE) {
+                    renderer.setSeriesLinesVisible(i, false);
+                    renderer.setSeriesShapesVisible(i, true);
+                }
+
+            }
+            renderer.setDrawSeriesLineAsPath(true);
+        }
 
         chart.setTitle(chartTitle);
         return chart;
@@ -343,6 +358,36 @@ public class ChartView extends DemoView {
         }
 
         return data;
+    }
+
+    class SeriesRenderProps {
+        String title;
+        String color;
+        int type;
+        int aggregated;
+
+        SeriesRenderProps(int type, String title, String color, int aggregated) {
+            this.type = type;
+            this.title = title;
+            this.color = color;
+            this.aggregated = aggregated;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public int getAggregated() {
+            return  aggregated;
+        }
+
+        public int getType() {
+            return type;
+        }
     }
 
     class EventLineTimeSeries extends TimeSeries {

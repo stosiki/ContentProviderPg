@@ -93,13 +93,14 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
         }
     }
 
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+
+
     private void setChart(Cursor cursor) {
         ChartView mView = new ChartView(getActivity(), cursor);
         ((ViewGroup)getView()).addView(mView);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }

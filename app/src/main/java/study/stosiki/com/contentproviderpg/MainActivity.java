@@ -2,6 +2,7 @@ package study.stosiki.com.contentproviderpg;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -275,13 +276,18 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void showUndo() {
+        final View footer = findViewById(R.id.main_footer);
         undoContainer.setVisibility(View.VISIBLE);
         undoContainer.requestLayout();
+        final int viewY = findCoords(R.id.main_footer)[1];
 
-        final int viewY = findCoords(R.id.undo_bar)[1];
+        ObjectAnimator showFooterAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY, viewY - undoContainer.getHeight());
+        ObjectAnimator showUndoAnimator = ObjectAnimator.ofFloat(undoContainer, View.Y, viewY, viewY - undoContainer.getHeight());
+        AnimatorSet showAnimator = new AnimatorSet();
+        showAnimator.play(showFooterAnimator).with(showUndoAnimator);
+//        showUndoAnimator.start();
 
-        hideUndoAnimator = ObjectAnimator.ofFloat(
-                undoContainer, View.Y, viewY, viewY + undoContainer.getHeight());
+        hideUndoAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY - undoContainer.getHeight(), viewY);
         hideUndoAnimator.addListener(new AnimatorListenerAdapter() {
             // this ugly flag is because onAnimationEnd is called either way
             private boolean isCancelled = false;
@@ -295,20 +301,25 @@ public class MainActivity extends AppCompatActivity implements
             public void onAnimationEnd(Animator animation) {
 //                animation.
                 restoreUndoContainerState();
-                if(isCancelled == false) {
+                if (isCancelled == false) {
                     deleteEventLine(selectedEventLinePositions.get(0));
                 }
                 resetSelection();
             }
 
             private void restoreUndoContainerState() {
-                undoContainer.setY(viewY);
+//                footer.setY(viewY);
                 undoContainer.setVisibility(View.INVISIBLE);
             }
         });
         hideUndoAnimator.setStartDelay(2000);
-        hideUndoAnimator.start();
+        ObjectAnimator hideFooterAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY - undoContainer.getHeight(), viewY);
+        AnimatorSet hideAnimator = new AnimatorSet();
+        hideAnimator.play(hideFooterAnimator).with(hideUndoAnimator);
 
+        AnimatorSet showAndHideAnimator = new AnimatorSet();
+        showAndHideAnimator.play(hideAnimator).after(showAnimator);
+        showAndHideAnimator.start();
     }
 
     private void resetSelection() {
