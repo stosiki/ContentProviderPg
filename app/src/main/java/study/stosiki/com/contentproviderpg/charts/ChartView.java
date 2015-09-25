@@ -97,6 +97,7 @@ public class ChartView extends DemoView {
     //TODO: all pixel values has to be converted to dp
     private static final Shape CIRCLE_SHAPE = new OvalShape(-5, -5, 10, 10);
     private static final Shape SQUARE_SHAPE = new RectShape(-5, -5, 10, 10);
+    private static final Shape COMMENT_TICK_SHAPE = new RectShape(-1,-5,2,10);
     private static final Shape[] NODE_SHAPES = new Shape[]{CIRCLE_SHAPE, SQUARE_SHAPE};
     private static final Font ANNOTATION_FONT = new Font("SansSerif", Typeface.NORMAL, 24);
     private static final double CCW_90 = Math.toRadians(-90);
@@ -239,6 +240,8 @@ public class ChartView extends DemoView {
         for(EventLine eventLine : data.values()) {
             if(eventLine.getType() == EventLine.LINE_TYPE_STRING) {
                 DateAxis dateAxis = (DateAxis)plot.getDomainAxis();
+                TimeSeries series = new TimeSeries(eventLine.getTitle());
+
                 for(SimpleEvent event : eventLine.getEvents()) {
                     MyXYTextAnnotation annotation = new MyXYTextAnnotation(
                             ((StringEvent) event).getComment(),
@@ -259,12 +262,20 @@ public class ChartView extends DemoView {
                     annotation.setRotationAngle(CCW_90);
                     annotation.setPaintType(new SolidColor(Color.BLACK));
                     plot.addAnnotation(annotation);
+
+                    series.add(new FixedMillisecond(event.getTimestamp()),
+                            (int) ((chartMaxDomainValue + chartMinDomainValue) / 2));
                 }
+
                 long r1 = dateAxis.getMaximumDate().getTime() - dateAxis.getMinimumDate().getTime();
                 //TODO: hardcoded, good for most devices, but would be better to figure width of an actual window
                 int width = 800;
                 double r2 = r1*(width + ANNOTATION_FONT.getSize()) / width;
                 dateAxis.setMinimumDate(new Date(dateAxis.getMinimumDate().getTime() - (long) (r2 - r1)));
+
+                seriesRenderPropsList.add(new SeriesRenderProps(
+                        eventLine.getType(), eventLine.getTitle(), eventLine.getColor(), eventLine.getAggregate()));
+                dataset.addSeries(series);
             }
         }
 
@@ -276,14 +287,19 @@ public class ChartView extends DemoView {
             renderer.setBaseShape(CIRCLE_SHAPE);
             for(int i=0; i<seriesRenderPropsList.size(); i++) {
                 SeriesRenderProps props = seriesRenderPropsList.get(i);
-                renderer.setSeriesShape(i, NODE_SHAPES[i]);
+                if(props.getType() == EventLine.LINE_TYPE_STRING) {
+                    renderer.setSeriesShape(i, COMMENT_TICK_SHAPE);
+                } else {
+                    renderer.setSeriesShape(i, NODE_SHAPES[i]);
+                }
                 renderer.setSeriesShapesFilled(i, true);
                 renderer.setSeriesShapesVisible(i, true);
                 renderer.setSeriesStroke(i, 5.0f);
                 renderer.setSeriesPaintType(i, new SolidColor(Integer.parseInt(props.getColor())));
 
                 if(props.getType() == EventLine.LINE_TYPE_SIMPLE &&
-                        props.getAggregated() == EventLine.AGGREGATE_NONE) {
+                        props.getAggregated() == EventLine.AGGREGATE_NONE
+                        || props.getType() == EventLine.LINE_TYPE_STRING) {
                     renderer.setSeriesLinesVisible(i, false);
                     renderer.setSeriesShapesVisible(i, true);
                 }

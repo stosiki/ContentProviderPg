@@ -1,4 +1,4 @@
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -28,7 +28,10 @@
                 android:dividerHeight="1dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:scrollbars="vertical"
                 />
+
+
             <TextView
                 android:id="@+id/click_to_add_msg"
                 android:layout_width="match_parent"
@@ -39,10 +42,6 @@
                 />
         </LinearLayout>
     </LinearLayout>
-
-
-
-
     <LinearLayout
         android:id="@+id/main_footer"
         android:orientation="vertical"
@@ -50,9 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:gravity="center|bottom"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="#ff88ccff"
         >
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_event_line_widget"
@@ -64,39 +61,39 @@
             android:layout_gravity="right"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
-            android:background="#ffaa99ee"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/undo_bar"
-        android:dividerPadding="12dp"
-        android:padding="4dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:background="@color/background_floating_material_dark"
-        android:layout_below="@id/main_footer"
-        android:alpha="100"
-        >
-        <TextView
-            android:id="@+id/undo_message"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/undo_bar"
+            android:orientation="horizontal"
+            android:dividerPadding="12dp"
+            android:padding="4dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background_floating_material_dark"
-            android:text="Event Line deleted"
-            android:textColor="#ffeeeeee"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            />
-        <Button
-            android:id="@+id/undo_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="UNDO"
-            android:layout_marginLeft="30dp"
-            android:onClick="onUndoClick"
-            android:background="@color/background_floating_material_dark"
-            android:textColor="#ffeb3b"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:visibility="gone"
+            android:background="#ff223344"
+            >
+            <TextView
+                android:id="@+id/undo_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/background_floating_material_dark"
+                android:text="Event Line deleted"
+                android:textColor="#ffeeeeee"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+            <Button
+                android:id="@+id/undo_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UNDO"
+                android:layout_marginLeft="30dp"
+                android:onClick="onUndoClick"
+                android:background="@color/background_floating_material_dark"
+                android:textColor="#ffeb3b"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
     </LinearLayout>
-</RelativeLayout>
+
+</FrameLayout>

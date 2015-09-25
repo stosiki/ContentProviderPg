@@ -13,13 +13,17 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -82,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements
     private ObjectAnimator hideUndoAnimator;
     private Animation listItemCollapseAnimation;
 
+    private int undoContainerHeight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         cursorAdapter = new CursorAdapter(this, null, 0) {
-
             @Override
             public Cursor swapCursor(Cursor newCursor) {
                 if(newCursor == null || newCursor.getCount() == 0) {
@@ -142,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements
         };
 
         undoContainer = (View)findViewById(R.id.undo_bar);
-
         listView = (ListView)findViewById(android.R.id.list);
         listView.setAdapter(cursorAdapter);
         getLoaderManager().initLoader(EVENT_LINES_LOADER_ID, null, this);
@@ -191,6 +196,16 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         resetSelection();
+    }
+
+    @Override
+    public void onWindowFocusChanged (boolean hasFocus) {
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(
+                ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.EXACTLY);
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(
+                ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.EXACTLY);
+        undoContainer.measure(widthMeasureSpec, heightMeasureSpec);
+        undoContainerHeight = undoContainer.getMeasuredHeight();
     }
 
     private void highlightSelectedItems() {
@@ -281,13 +296,17 @@ public class MainActivity extends AppCompatActivity implements
         undoContainer.requestLayout();
         final int viewY = findCoords(R.id.main_footer)[1];
 
-        ObjectAnimator showFooterAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY, viewY - undoContainer.getHeight());
-        ObjectAnimator showUndoAnimator = ObjectAnimator.ofFloat(undoContainer, View.Y, viewY, viewY - undoContainer.getHeight());
-        AnimatorSet showAnimator = new AnimatorSet();
-        showAnimator.play(showFooterAnimator).with(showUndoAnimator);
-//        showUndoAnimator.start();
+        ObjectAnimator showFooterAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY, viewY - undoContainerHeight);
+        showFooterAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                hideUndoAnimator.start();
+            }
+        });
+        showFooterAnimator.setDuration(2000);
+        showFooterAnimator.start();
 
-        hideUndoAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY - undoContainer.getHeight(), viewY);
+        hideUndoAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY - undoContainerHeight, viewY);
         hideUndoAnimator.addListener(new AnimatorListenerAdapter() {
             // this ugly flag is because onAnimationEnd is called either way
             private boolean isCancelled = false;
@@ -308,18 +327,11 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             private void restoreUndoContainerState() {
-//                footer.setY(viewY);
+                footer.setY(viewY);
                 undoContainer.setVisibility(View.INVISIBLE);
             }
         });
-        hideUndoAnimator.setStartDelay(2000);
-        ObjectAnimator hideFooterAnimator = ObjectAnimator.ofFloat(footer, View.Y, viewY - undoContainer.getHeight(), viewY);
-        AnimatorSet hideAnimator = new AnimatorSet();
-        hideAnimator.play(hideFooterAnimator).with(hideUndoAnimator);
-
-        AnimatorSet showAndHideAnimator = new AnimatorSet();
-        showAndHideAnimator.play(hideAnimator).after(showAnimator);
-        showAndHideAnimator.start();
+        hideUndoAnimator.setStartDelay(4000);
     }
 
     private void resetSelection() {
