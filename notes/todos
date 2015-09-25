@@ -1,1 +1,18 @@
-- CSV export
++ CSV export
++ showMessage in ReportActivity should be implemented as a slider, same as Undo bar
++ remove "Save to File" menu item
+
+- figure out what to do with all Sends and Shares
+- make application launcher icon
+- resource file cleanup
+- general code cleanup, comments
+- make sure all the strings are properly translated
+- test (at least some) for the memory leaks
+
+- decide on a name (Watch...)
+- get ready to sumbit to the store
+    - short tutorial
+    - screen shots
+- market the shit of it
+    - reddit
+- Widget (next version)

@@ -28,10 +28,9 @@
                 android:dividerHeight="1dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="vertical"
+                android:scrollingCache="true"
+                android:smoothScrollbar="true"
                 />
-
-
             <TextView
                 android:id="@+id/click_to_add_msg"
                 android:layout_width="match_parent"
@@ -50,12 +49,14 @@
         android:layout_gravity="bottom|center_horizontal"
         android:gravity="center|bottom"
         android:layout_centerHorizontal="true"
+        android:elevation="6dp"
         >
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_event_line_widget"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_circle_black_24dp"
+            android:src="@drawable/ic_add_white_48dp"
+            app:fabSize="normal"
             app:elevation="4dp"
             app:borderWidth="0dp"
             android:layout_gravity="right"

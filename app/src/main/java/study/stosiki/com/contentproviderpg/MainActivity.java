@@ -542,5 +542,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void onDialogNegativeClick(DialogFragment dialog) {
+        resumeInput();
     }
 }

@@ -24,9 +24,13 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.*;
 
@@ -90,16 +94,18 @@ public class ReportActivity extends AppCompatActivity
         // try to find out which tab is visible, because action is context dependent
         int currentTabIndex = pager.getCurrentItem();
         switch (item.getItemId()) {
+/*
             case R.id.menu_item_save:
                 switch (currentTabIndex) {
                     case CHART_TAB:
                         saveChartToFile();
                         break;
                     case PLAIN_LOG_TAB:
-                        saveLogToFile();
+                        saveLogToCSV();
                         break;
                 }
                 break;
+*/
             case R.id.menu_item_share:
                 switch (currentTabIndex) {
                     case CHART_TAB:
@@ -107,7 +113,7 @@ public class ReportActivity extends AppCompatActivity
                         startShareImageActivity();
                         break;
                     case PLAIN_LOG_TAB:
-                        saveLogToFile();
+                        saveLogToCSV();
                         startShareLogActivity();
                         break;
                 }
@@ -116,16 +122,11 @@ public class ReportActivity extends AppCompatActivity
     }
 
     private void startShareLogActivity() {
-        //TODO: Implement
-        Log.d(TAG, "startShareLogActivity is not yet implemented");
-    }
-
-    /**
-     * saves the log to CSV file
-     */
-    private void saveLogToFile() {
-        //TODO: Implement it
-        Log.d(TAG, "saveLogToFile is not yet implemented");
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.putExtra(Intent.EXTRA_STREAM,
+                Uri.parse(getCsvDirectory().toString() + getCsvFileName()));
+        startActivity(Intent.createChooser(share, "Share CSV file"));
     }
 
     private void startShareImageActivity() {
@@ -134,6 +135,26 @@ public class ReportActivity extends AppCompatActivity
         share.putExtra(Intent.EXTRA_STREAM,
                 Uri.parse(getChartDirectory().toString() + getChartFileName()));
         startActivity(Intent.createChooser(share, "Share Image"));
+    }
+
+    private void saveLogToCSV() {
+        Fragment listReportFragment = findListReportFragment();
+        List<ListReportFragment.EventListEntry> events =
+                ((ListReportFragment)listReportFragment).getEventList();
+        StringBuilder sb = new StringBuilder("Line Title, Date, Data\n");
+        for(ListReportFragment.EventListEntry entry : events) {
+            sb.append(entry.toCsvString());
+        }
+        File outFile = new File(format("%s%s", getCsvDirectory(), getCsvFileName()));
+        try {
+            FileWriter fw = new FileWriter(outFile);
+            fw.append(sb.toString());
+            fw.close();
+            showMessage(R.string.file_saved_success, MESSAGE_NORMAL);
+        } catch (IOException ioe) {
+            Log.d(TAG, ioe.getMessage());
+            showMessage(R.string.error_writing_to_file, MESSAGE_ERROR);
+        }
     }
 
     private void saveChartToFile() {
@@ -210,8 +231,22 @@ public class ReportActivity extends AppCompatActivity
         return null;
     }
 
+    private Fragment findListReportFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for(Fragment f : fragments) {
+            if(f instanceof ListReportFragment) {
+                return f;
+            }
+        }
+        return null;
+    }
+
     private String getChartFileName() {
         return "/" + valueOf(new Date().getTime()) + ".png";
+    }
+
+    private String getCsvFileName() {
+        return "/" + valueOf(new Date().getTime()) + ".csv";
     }
 
     private void saveViewAsImage(View v, File outFile) {
@@ -263,7 +298,17 @@ public class ReportActivity extends AppCompatActivity
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "EventLinesCharts");
         if (file.mkdirs() == false) {
-            Log.e(TAG, "Directory not created");
+            Log.e(TAG, "Directory was not created");
+        }
+        return file;
+    }
+
+    public File getCsvDirectory() {
+        // Get the directory for the user's public pictures directory.
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM), "EventLinesCharts");
+        if (file.mkdirs() == false) {
+            Log.e(TAG, "Directory was not created");
         }
         return file;
     }

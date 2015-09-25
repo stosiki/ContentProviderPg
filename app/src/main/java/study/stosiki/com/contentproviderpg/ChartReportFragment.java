@@ -30,21 +30,16 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
     private long[] lineIds;
 
     ViewGroup chartHolder;
-//    private Toolbar toolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-//        return super.onCreateView(inflater, container, savedInstanceState);
         lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
         getLoaderManager().initLoader(EVENT_LIST_LOADER_ID, null, ChartReportFragment.this);
-
         chartHolder = (ViewGroup)
-                getActivity().getLayoutInflater().inflate(R.layout.chart_report_fragment, container, false);
+                getActivity().getLayoutInflater().inflate(
+                        R.layout.chart_report_fragment, container, false);
         return chartHolder;
-
-//        return new View(getActivity());
     }
 
     @Nullable
@@ -100,7 +95,12 @@ public class ChartReportFragment extends Fragment implements LoaderManager.Loade
 
 
     private void setChart(Cursor cursor) {
-        ChartView mView = new ChartView(getActivity(), cursor);
-        ((ViewGroup)getView()).addView(mView);
+        ChartView chartView = new ChartView(getActivity(), cursor);
+        View emptyView = getView().findViewById(R.id.empty_data_msg);
+        if (cursor.getCount() > 0) {
+            ((ViewGroup) getView()).addView(chartView);
+        } else {
+            emptyView.setVisibility(View.VISIBLE);
+        }
     }
 }

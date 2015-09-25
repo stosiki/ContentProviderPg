@@ -5,7 +5,7 @@
     <color name="selected_event_line_bg">#ffbbbbbb</color>
     <color name="line_normal_bg">#fffffffe</color>
     <color name="light_grey">#ffdddddd</color>
-    <color name="event_line_item_bg">#ff2299fa</color>
+    <color name="event_line_item_bg">#fffefefe</color>
 
     <color name="ColorPrimary">#00897B</color>
     <color name="ColorPrimaryDark">#00695C</color>

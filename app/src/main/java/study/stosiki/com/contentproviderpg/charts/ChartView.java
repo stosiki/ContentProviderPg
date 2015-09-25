@@ -220,7 +220,7 @@ public class ChartView extends DemoView {
                             series.add(new FixedMillisecond(timestamp),
                                     (int) ((chartMaxDomainValue + chartMinDomainValue) / 2));
                         } else {
-                            series.add(new FixedMillisecond(timestamp), simpleLinesCount - 1);
+                            series.add(new FixedMillisecond(timestamp), simpleLinesCount);
                         }
                     }
                 }
@@ -307,6 +307,8 @@ public class ChartView extends DemoView {
             }
             renderer.setDrawSeriesLineAsPath(true);
         }
+
+
 
         chart.setTitle(chartTitle);
         return chart;

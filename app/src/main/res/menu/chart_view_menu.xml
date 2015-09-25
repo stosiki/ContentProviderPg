@@ -4,14 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     >
     <item
-        android:id="@+id/menu_item_save"
-        android:title="Show Report"
-        android:icon="@drawable/ic_save_white_24dp"
-        app:showAsAction="ifRoom"
-        tools:ignore="AppCompatResource"
-        />
-
-    <item
         android:id="@+id/menu_item_share"
         android:title="Share"
         android:icon="@drawable/ic_share_white_24dp"

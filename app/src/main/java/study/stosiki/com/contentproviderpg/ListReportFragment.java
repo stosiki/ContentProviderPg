@@ -17,7 +17,11 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import study.stosiki.com.contentproviderpg.db.DbSchema;
 import study.stosiki.com.contentproviderpg.db.EventLinesContract;
@@ -28,7 +32,6 @@ import study.stosiki.com.contentproviderpg.db.EventLinesContract;
 public class ListReportFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = ListReportFragment.class.getSimpleName();
 
-    private ViewGroup listHolder;
     private static final int EVENT_LIST_LOADER_ID = 3;
 
     private CursorAdapter cursorAdapter;
@@ -38,10 +41,7 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         lineIds = getActivity().getIntent().getLongArrayExtra(DbSchema.COL_LINE_ID);
-
-        // create cursor adapter
         cursorAdapter = new CursorAdapter(getActivity(), null, 0) {
             @Override
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -54,9 +54,16 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
             public void bindView(View view, Context context, Cursor cursor) {
                 TextView timeView = (TextView)view.findViewById(R.id.event_time);
                 TextView dataView = (TextView)view.findViewById(R.id.event_data);
+                TextView lineTitleView = (TextView)view.findViewById(R.id.report_line_title);
 
-                timeView.setText(new Date(cursor.getLong(1)).toString());
-                dataView.setText(cursor.getString(2));
+                long timestamp = cursor.getLong(1);
+                String data = cursor.getString(3);
+                String lineTitle = cursor.getString(4);
+                int lineType = cursor.getInt(5);
+
+                timeView.setText(new Date(timestamp).toString());
+                dataView.setText(data);
+                lineTitleView.setText(lineTitle);
             }
         };
 
@@ -87,8 +94,8 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
         // get line id(s) from intent
         return new CursorLoader(
                 getActivity(),
-                EventLinesContract.Events.CONTENT_URI,
-                EventLinesContract.Events.PROJECTION_ALL,
+                EventLinesContract.EventGraphData.CONTENT_URI,
+                EventLinesContract.EventGraphData.PROJECTION_ALL,
                 DbSchema.COL_LINE_ID + selection,
                 selectionArgs,
                 null
@@ -112,5 +119,51 @@ public class ListReportFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    public List<EventListEntry> getEventList() {
+        List<EventListEntry> eventList = new ArrayList<>();
+        Cursor c = cursorAdapter.getCursor();
+        c.moveToFirst();
+        for(int i=0; i<cursorAdapter.getCount(); i++) {
+            long timestamp = c.getLong(1);
+            String data = c.getString(3);
+            String lineTitle = c.getString(4);
+            int lineType = c.getInt(5);
+            eventList.add(new EventListEntry(c.getLong(1), c.getString(3), lineTitle, lineType));
+            c.moveToNext();
+        }
+        return eventList;
+    }
+
+    class EventListEntry {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        long timestamp;
+        String data;
+        String lineTitle;
+        int lineType;
+
+        EventListEntry(long timestamp, String data, String lineTitle, int lineType) {
+            this.timestamp = timestamp;
+            this.data = data;
+            this.lineTitle = lineTitle;
+            this.lineType = lineType;
+        }
+
+        public long getTimestamp() { return timestamp; }
+        public String getData() { return data; }
+        public String getLineTitle() { return lineTitle; }
+        public int getLineType() { return lineType; }
+
+        public String toCsvString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(lineTitle);
+            sb.append(",");
+            sb.append(dateFormat.format(new Date(timestamp)));
+            sb.append(",");
+            sb.append(data);
+            sb.append("\n");
+            return sb.toString();
+        }
     }
 }
