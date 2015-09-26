@@ -19,13 +19,16 @@ o comments on the chart are way too close to the range axis,
 + add scrollbars to the event line list
 o extend range in case there are two basics on the same chart - they don't look good one on the bottom and another on the very top
 + if event line with 0 events selected, show "No data to display" instead of an empty chart
+o fix date format on the chart domain axis (it turned to be very complex and not that much needed)
 
-- fix date format on the chart domain axis
-    x-> PeriodAxis  has the option to display dates in more than one "band" if that is what you are looking to do.
-    -> the tick labels in JFreeChart are drawn in the DateAxis.drawTickMarksAndLabels() method, so you could modify that. Note that you'd also have to reserve additional space for the multi-line labels (if there are any) in the reserveSpace() method.
-    -> even though the tick labels are now narrower, I don't get more of them. Looks to me like the number of ticks I'm getting is calculated using the wrong tick label width, probably from the original string where the new-line is ignored.
-    -> Tick spacing calculations are done in the refreshTicks() method in the DateAxis class (it delegates to either refreshTicksHorizontal() or refreshTicksVertical() depending on the position of the axis).
-    -> estimateMaximumTickLabelWidth(), which is the method you use to guess how long the labels will be.
 - fix colors and layouts
+    - main screen (event line list)
+    - create line dialog
+    - undo bar
+    - report views
+        - chart
+        - list
+        - "file saved successfully" popup bar
+
 
 

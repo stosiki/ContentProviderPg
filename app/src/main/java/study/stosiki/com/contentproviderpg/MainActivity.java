@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         cursorAdapter = new CursorAdapter(this, null, 0) {
             @Override

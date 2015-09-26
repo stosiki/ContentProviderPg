@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ReportActivity"/>
+        <activity android:name=".ReportActivity"
+            android:parentActivityName=".MainActivity"
+            />
 
         <provider
             android:name=".db.EventLinesContentProvider"

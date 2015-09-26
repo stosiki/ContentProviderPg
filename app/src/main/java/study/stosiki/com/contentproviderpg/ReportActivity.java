@@ -43,7 +43,7 @@ public class ReportActivity extends AppCompatActivity
 {
     private static final String TAG = ReportActivity.class.getSimpleName();
 
-    private static final CharSequence TITLES[]={"Home","Events"};
+    private static final CharSequence TITLES[]={"Chart","Event List"};
     private static final int NUM_TABS =2;
     private static final int CHART_TAB = 0;
     private static final int PLAIN_LOG_TAB = 1;
@@ -67,6 +67,11 @@ public class ReportActivity extends AppCompatActivity
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
 
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(), TITLES, NUM_TABS);
         pager = (ViewPager) findViewById(R.id.pager);
@@ -94,6 +99,10 @@ public class ReportActivity extends AppCompatActivity
         // try to find out which tab is visible, because action is context dependent
         int currentTabIndex = pager.getCurrentItem();
         switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; goto parent activity.
+                this.finish();
+                return true;
 /*
             case R.id.menu_item_save:
                 switch (currentTabIndex) {

@@ -2,14 +2,17 @@
 + showMessage in ReportActivity should be implemented as a slider, same as Undo bar
 + remove "Save to File" menu item
 
-- figure out what to do with all Sends and Shares
-- make application launcher icon
+~ figure out what to do with all Sends and Shares
+
+- decide on a name (Watch...)
+- make application launcher icon (self or elance?)
 - resource file cleanup
 - general code cleanup, comments
 - make sure all the strings are properly translated
 - test (at least some) for the memory leaks
+- try lint
+- what is this way (I saw on inet) to test Android apps on many devices?
 
-- decide on a name (Watch...)
 - get ready to sumbit to the store
     - short tutorial
     - screen shots

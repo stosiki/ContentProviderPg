@@ -138,8 +138,8 @@ public class ChartView extends DemoView {
         plot.setRangePannable(false);
         plot.getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         plot.setOutlineVisible(false);
-        ((DateAxis)plot.getDomainAxis()).setDateFormatOverride(new SimpleDateFormat("dd-MM-yy hh:mm"));
-//        dateAxis.s
+//        ((DateAxis)plot.getDomainAxis()).setDateFormatOverride(new SimpleDateFormat("dd-MM-yy hh:mm"));
+        plot.getDomainAxis().setTickMarkInsideLength(10.0f);
 
         // sort through data,
         // if contains any LINE_TYPE_STRING series, extract it and convert to annotations
