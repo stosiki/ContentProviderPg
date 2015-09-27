@@ -1,21 +1,34 @@
 + CSV export
 + showMessage in ReportActivity should be implemented as a slider, same as Undo bar
 + remove "Save to File" menu item
++ figure out what to do with all Sends and Shares
 
-~ figure out what to do with all Sends and Shares
 
-- decide on a name (Watch...)
+
+- decide on a name (Watch..., TrendSpotter)
 - make application launcher icon (self or elance?)
+
+Code:
 - resource file cleanup
 - general code cleanup, comments
+- remove log calls
 - make sure all the strings are properly translated
 - test (at least some) for the memory leaks
 - try lint
 - what is this way (I saw on inet) to test Android apps on many devices?
+- https://www.reddit.com/r/androiddev/comments/1ekl2g/how_and_why_to_do_beta_testing_through_the_play/
 
-- get ready to sumbit to the store
-    - short tutorial
-    - screen shots
+
+Marketing
+- prepare screenshots
+- prepare short description
+- what else do people have for their apps?
+- consider Beta testing on the Play Strore
+
 - market the shit of it
-    - reddit
+    - (Youtube video, blog, SEO, submitting to android blogs/more subreddits)
+    but the thing that helps most is having a good game that spreads by word of mouth and natural sharing/blogging
+    - I got my viewers by posting in relevant subreddits that my app could be helpful to them.
+    Also searching keywords on twitter and replying to people.
 - Widget (next version)
+
