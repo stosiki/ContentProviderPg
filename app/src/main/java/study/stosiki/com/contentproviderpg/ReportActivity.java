@@ -118,35 +118,31 @@ public class ReportActivity extends AppCompatActivity
             case R.id.menu_item_share:
                 switch (currentTabIndex) {
                     case CHART_TAB:
-                        saveChartToFile();
-                        startShareImageActivity();
+                        startShareImageActivity(saveChartToFile());
                         break;
                     case PLAIN_LOG_TAB:
-                        saveLogToCSV();
-                        startShareLogActivity();
+                        startShareLogActivity(saveLogToCSV());
                         break;
                 }
         }
         return true;
     }
 
-    private void startShareLogActivity() {
+    private void startShareLogActivity(File csvFile) {
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("text/plain");
-        share.putExtra(Intent.EXTRA_STREAM,
-                Uri.parse(getCsvDirectory().toString() + getCsvFileName()));
+        share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(csvFile));
         startActivity(Intent.createChooser(share, "Share CSV file"));
     }
 
-    private void startShareImageActivity() {
+    private void startShareImageActivity(File imageFile) {
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/png");
-        share.putExtra(Intent.EXTRA_STREAM,
-                Uri.parse(getChartDirectory().toString() + getChartFileName()));
+        share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(imageFile));
         startActivity(Intent.createChooser(share, "Share Image"));
     }
 
-    private void saveLogToCSV() {
+    private File saveLogToCSV() {
         Fragment listReportFragment = findListReportFragment();
         List<ListReportFragment.EventListEntry> events =
                 ((ListReportFragment)listReportFragment).getEventList();
@@ -164,15 +160,17 @@ public class ReportActivity extends AppCompatActivity
             Log.d(TAG, ioe.getMessage());
             showMessage(R.string.error_writing_to_file, MESSAGE_ERROR);
         }
+        return outFile;
     }
 
-    private void saveChartToFile() {
+    private File saveChartToFile() {
 //        Fragment chartReportFragment = adapter.getItem(0);
         Fragment chartReportFragment = findChartFragment();
         View fragmentView = chartReportFragment.getView();
         File outFile = new File(format("%s%s", getChartDirectory(), getChartFileName()));
         saveViewAsImage(fragmentView, outFile);
         showMessage(R.string.file_saved_success, MESSAGE_NORMAL);
+        return outFile;
     }
 
     private void showMessage(int rId, int type) {
