@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
 
         activityMode = MODE_NORMAL;
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
